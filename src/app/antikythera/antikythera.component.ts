@@ -8,7 +8,7 @@ import { AppCanvasComponent } from "../graphics/app-canvas.component";
 })
 export class AntikytheraComponent implements OnInit {
     scene: AntikytheraScene;
-    @ViewChild(AppCanvasComponent) appCanvas: AppCanvasComponent;
+    @ViewChild(AppCanvasComponent, { static: true }) appCanvas: AppCanvasComponent;
 
     ngOnInit(): void {
         const gl = this.appCanvas.surface.nativeElement.getContext('webgl');

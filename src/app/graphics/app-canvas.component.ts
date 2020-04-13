@@ -7,7 +7,7 @@ import { Scene } from '../scene/scene';
     templateUrl: './app-canvas.component.html'
 })
 export class AppCanvasComponent {
-    @ViewChild('surface') surface: ElementRef;
+    @ViewChild('surface', { static: true }) surface: ElementRef;
 
     private scene: Scene;
     gl: WebGLRenderingContext;
