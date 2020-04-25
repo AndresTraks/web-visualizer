@@ -22,8 +22,8 @@ export class Scene {
     }
 
     draw(program: ShaderProgram, seconds: number): void {
-        this.light.setRotatingPosition(seconds),
-        this.camera.setRotatingPosition(seconds);
+        this.light.rotatingPosition = seconds,
+        this.camera.rotatingPosition = seconds;
 
         const perspectiveMatrixLocation: WebGLUniformLocation = program.getUniformLocation('projection_matrix');
         this.gl.uniformMatrix4fv(perspectiveMatrixLocation, false, this.camera.projectionMatrix.el);

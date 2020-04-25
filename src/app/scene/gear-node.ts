@@ -35,7 +35,7 @@ export class GearNode extends SceneNode {
         mesh: Mesh,
         gl: WebGLRenderingContext) {
         super(gl);
-        this.meshes.push(mesh);
+        this.meshes = [mesh];
     }
 
     private static getRightAngleToothInnerRadius(outerRadius: number, numTeeth: number) {

@@ -1,0 +1,9 @@
+#leftPanel {
+    width:350px;
+    height: 100%;
+    float: left;
+}
+
+#bodyContainer {
+    white-space: nowrap;
+}

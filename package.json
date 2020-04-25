@@ -1,6 +1,6 @@
 {
   "author": "Andres Traks",
-  "name": "antikythera",
+  "name": "web-visualizer",
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
@@ -13,6 +13,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.1.1",
+    "@angular/cdk": "^9.2.1",
     "@angular/common": "~9.1.1",
     "@angular/compiler": "~9.1.1",
     "@angular/core": "~9.1.1",
@@ -20,7 +21,9 @@
     "@angular/platform-browser": "~9.1.1",
     "@angular/platform-browser-dynamic": "~9.1.1",
     "@angular/router": "~9.1.1",
+    "bootstrap": "4.1.1",
     "core-js": "^2.5.4",
+    "ngx-bootstrap": "^5.6.1",
     "rxjs": "~6.5.5",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"

@@ -1,3 +1,11 @@
-<div style="text-align:center">
+<div id="bodyContainer">
+    <div id="leftPanel">
+        <accordion [isAnimated]="true">
+            <accordion-group heading="Settings">
+                <input value="ds" type="checkbox" [checked]="isOrtographicProjection" (change)="onChangeOrtographicProjection();">
+                Orthographic projection
+            </accordion-group>
+        </accordion>
+    </div>
     <app-canvas></app-canvas>
 </div>
