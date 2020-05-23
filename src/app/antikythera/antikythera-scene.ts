@@ -1,11 +1,11 @@
-import { Scene } from "../scene/scene";
-import { GearNode } from "../scene/gear-node";
-import { SceneNode } from "../scene/scene-node";
-import { ShapeFactory } from "../graphics/shape-factory";
-import { Mesh } from "../graphics/mesh";
-import { ShaderProgram } from "../graphics/shader-program";
+import { AppRenderingContext } from '../graphics/app-rendering-context';
 import { Matrix4 } from "../graphics/matrix4";
+import { Mesh } from "../graphics/mesh";
+import { ShapeFactory } from "../graphics/shape-factory";
 import { Vector3 } from "../graphics/vector3";
+import { GearNode } from "../scene/gear-node";
+import { Scene } from "../scene/scene";
+import { SceneNode } from "../scene/scene-node";
 
 export class AntikytheraScene extends Scene {
     nodes: SceneNode[];
@@ -73,109 +73,113 @@ export class AntikytheraScene extends Scene {
     axleO: SceneNode;
     axleQ: SceneNode;
 
-    constructor(gl: WebGLRenderingContext) {
-        super(gl);
+    constructor(renderingContext: AppRenderingContext) {
+        super(renderingContext);
+        const gl = renderingContext.gl;
 
         const alpha = 0.95;
 
-        this.solarNodes = new SceneNode(gl);
+        this.solarNodes = new SceneNode(renderingContext);
         this.solarNodes.color = [0.6, 0.5, 0.1, alpha];
-        this.gearA1 = GearNode.createFace(48, 0.136, gl);
-        this.gearB1 = GearNode.create(233, 0.65, 0.45, gl);
+        this.gearA1 = GearNode.createFace(48, 0.136, renderingContext);
+        this.gearB1 = GearNode.create(233, 0.65, 0.45, renderingContext);
         this.gearB1.addCross();
-        this.gearB2 = GearNode.createClosed(64, 0.155, gl);
+        this.gearB2 = GearNode.createClosed(64, 0.155, renderingContext);
         this.solarNodes.children = [this.gearA1, this.gearB1, this.gearB2];
         
-        this.m1Nodes = new SceneNode(gl);
+        this.m1Nodes = new SceneNode(renderingContext);
         this.m1Nodes.color = [0.9, 0.5, 0.1, alpha];
-        this.gearL1 = GearNode.createClosed(38, 0.09, gl);
-        this.gearL2 = GearNode.createClosed(53, 0.131, gl);
-        this.gearM1 = GearNode.createClosed(96, 0.245, gl);
-        this.gearM2 = GearNode.createClosed(15, 0.044, gl);
-        this.gearM3 = GearNode.createClosed(27, 0.06, gl);
-        this.axleM = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.16), gl), gl);
+        this.gearL1 = GearNode.createClosed(38, 0.09, renderingContext);
+        this.gearL2 = GearNode.createClosed(53, 0.131, renderingContext);
+        this.gearM1 = GearNode.createClosed(96, 0.245, renderingContext);
+        this.gearM2 = GearNode.createClosed(15, 0.044, renderingContext);
+        this.gearM3 = GearNode.createClosed(27, 0.06, renderingContext);
+        this.axleM = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.16, 16), gl), renderingContext);
         this.m1Nodes.children = [this.gearL1, this.gearL2, this.gearM1, this.gearM2, this.gearM3, this.axleM];
 
-        this.lunisolarNodes = new SceneNode(gl);
+        this.lunisolarNodes = new SceneNode(renderingContext);
         this.lunisolarNodes.color = [0.25, 0.75, 0.3, alpha];
-        this.gearN1 = GearNode.createClosed(53, 0.125, gl);
-        this.gearN2 = GearNode.createClosed(57, 0.1, gl);
-        this.gearN3 = GearNode.createClosed(15, 0.05, gl);
-        this.metonicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
-        this.axleN = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.25), gl), gl);
+        this.gearN1 = GearNode.createClosed(53, 0.125, renderingContext);
+        this.gearN2 = GearNode.createClosed(57, 0.1, renderingContext);
+        this.gearN3 = GearNode.createClosed(15, 0.05, renderingContext);
+        this.metonicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
+        this.axleN = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.25, 16), gl), renderingContext);
         this.lunisolarNodes.children = [this.gearN1, this.gearN2, this.gearN3, this.metonicDial, this.axleN];
 
-        this.olympicNodes = new SceneNode(gl);
+        this.olympicNodes = new SceneNode(renderingContext);
         this.olympicNodes.color = [1, 1, 1, alpha];
-        this.gearO1 = GearNode.createClosed(60, 0.09, gl);
-        this.olympicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
-        this.axleO = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.21), gl), gl);
+        this.gearO1 = GearNode.createClosed(60, 0.09, renderingContext);
+        this.olympicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
+        this.axleO = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.21, 16), gl), renderingContext);
         this.olympicNodes.children = [this.gearO1, this.olympicDial, this.axleO];
 
-        this.callipicNodes = new SceneNode(gl);
+        this.callipicNodes = new SceneNode(renderingContext);
         this.callipicNodes.color = [0.5, 0.75, 0.2, alpha];
-        this.gearP1 = GearNode.createClosed(60, 0.13, gl);
-        this.gearP2 = GearNode.createClosed(12, 0.045, gl);
-        this.gearQ1 = GearNode.createClosed(60, 0.13, gl);
-        this.callipicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
-        this.axleQ = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.14), gl), gl);
+        this.gearP1 = GearNode.createClosed(60, 0.13, renderingContext);
+        this.gearP2 = GearNode.createClosed(12, 0.045, renderingContext);
+        this.gearQ1 = GearNode.createClosed(60, 0.13, renderingContext);
+        this.callipicDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
+        this.axleQ = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.14, 16), gl), renderingContext);
         this.callipicNodes.children = [this.gearP1, this.gearP2, this.gearQ1, this.callipicDial, this.axleQ];
 
-        this.sarosNodes = new SceneNode(gl);
+        this.sarosNodes = new SceneNode(renderingContext);
         this.sarosNodes.color = [0.45, 0.4, 0.7, alpha];
-        this.gearE3 = GearNode.createClosed(223, 0.525, gl);
-        this.gearE4 = GearNode.create(188, 0.5, 0.425, gl);
-        this.gearF1 = GearNode.createClosed(53, 0.14, gl);
-        this.gearF2 = GearNode.createClosed(30, 0.08, gl);
-        this.gearG1 = GearNode.createClosed(54, 0.14, gl);
-        this.gearG2 = GearNode.createClosed(20, 0.05, gl);
-        this.sarosDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
-        this.axleG = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.11), gl), gl);
+        this.gearE3 = GearNode.createClosed(223, 0.525, renderingContext);
+        this.gearE4 = GearNode.create(188, 0.5, 0.425, renderingContext);
+        this.gearF1 = GearNode.createClosed(53, 0.14, renderingContext);
+        this.gearF2 = GearNode.createClosed(30, 0.08, renderingContext);
+        this.gearG1 = GearNode.createClosed(54, 0.14, renderingContext);
+        this.gearG2 = GearNode.createClosed(20, 0.05, renderingContext);
+        this.sarosDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
+        this.axleG = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.11, 16), gl), renderingContext);
         this.sarosNodes.children = [this.gearE3, this.gearE4, this.gearF1, this.gearF2, this.gearG1, this.gearG2, this.sarosDial, this.axleG];
 
-        this.exeligmosNodes = new SceneNode(gl);
+        this.exeligmosNodes = new SceneNode(renderingContext);
         this.exeligmosNodes.color = [0.65, 0.4, 0.7, alpha];
-        this.gearH1 = GearNode.createClosed(60, 0.14, gl);
-        this.gearH2 = GearNode.createClosed(15, 0.04, gl);
-        this.gearI1 = GearNode.createClosed(60, 0.13, gl);
-        this.exigemosDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
-        this.axleI = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.04), gl), gl);
+        this.gearH1 = GearNode.createClosed(60, 0.14, renderingContext);
+        this.gearH2 = GearNode.createClosed(15, 0.04, renderingContext);
+        this.gearI1 = GearNode.createClosed(60, 0.13, renderingContext);
+        this.exigemosDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
+        this.axleI = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.04, 16), gl), renderingContext);
         this.exeligmosNodes.children = [this.gearH1, this.gearH2, this.gearI1, this.exigemosDial, this.axleI];
 
-        this.lunarNodes = new SceneNode(gl);
+        this.lunarNodes = new SceneNode(renderingContext);
         this.lunarNodes.color = [0.5, 0.75, 0.9, alpha];
-        this.gearC1 = GearNode.createClosed(38, 0.1, gl);
-        this.gearC2 = GearNode.createClosed(48, 0.11, gl);
-        this.gearD1 = GearNode.createClosed(24, 0.055, gl);
-        this.gearD2 = GearNode.createClosed(127, 0.315, gl);
-        this.axleD = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.12), gl), gl);
-        this.gearE2 = GearNode.createClosed(32, 0.08, gl);
-        this.gearE5 = GearNode.createClosed(50, 0.135, gl);
-        this.gearK1 = GearNode.createClosed(50, 0.135, gl);
+        this.gearC1 = GearNode.createClosed(38, 0.1, renderingContext);
+        this.gearC2 = GearNode.createClosed(48, 0.11, renderingContext);
+        this.gearD1 = GearNode.createClosed(24, 0.055, renderingContext);
+        this.gearD2 = GearNode.createClosed(127, 0.315, renderingContext);
+        this.axleD = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.12, 16), gl), renderingContext);
+        this.gearE2 = GearNode.createClosed(32, 0.08, renderingContext);
+        this.gearE5 = GearNode.createClosed(50, 0.135, renderingContext);
+        this.gearK1 = GearNode.createClosed(50, 0.135, renderingContext);
         this.lunarNodes.children = [this.gearC1, this.gearC2, this.gearD1, this.gearD2, this.axleD, this.gearE2, this.gearE5, this.gearK1];
 
-        this.hipparchosNodes = new SceneNode(gl);
+        this.hipparchosNodes = new SceneNode(renderingContext);
         this.hipparchosNodes.color = [0.45, 0.8, 0.75, alpha];
-        this.gearK2 = GearNode.createClosed(50, 0.140, gl);
-        this.gearE6 = GearNode.createClosed(50, 0.14, gl);
-        this.gearE1 = GearNode.createClosed(32, 0.1, gl);
-        this.gearB3 = GearNode.createClosed(32, 0.095, gl);
-        this.axleB = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.18), gl), gl);
-        this.axleE = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.17), gl), gl);
-        this.moonDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), gl);
+        this.gearK2 = GearNode.createClosed(50, 0.140, renderingContext);
+        this.gearE6 = GearNode.createClosed(50, 0.14, renderingContext);
+        this.gearE1 = GearNode.createClosed(32, 0.1, renderingContext);
+        this.gearB3 = GearNode.createClosed(32, 0.095, renderingContext);
+        this.axleB = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.18, 16), gl), renderingContext);
+        this.axleE = SceneNode.withMesh(new Mesh(ShapeFactory.createCylinder(0.02, 0.17, 16), gl), renderingContext);
+        this.moonDial = SceneNode.withMesh(new Mesh(ShapeFactory.createDial(), gl), renderingContext);
         this.hipparchosNodes.children = [this.gearK2, this.gearE6, this.gearE1, this.gearB3, this.axleB, this.axleE, this.moonDial];
 
         this.nodes = [this.solarNodes, this.m1Nodes, this.lunisolarNodes, this.olympicNodes, this.callipicNodes,
             this.sarosNodes, this.exeligmosNodes, this.lunarNodes, this.hipparchosNodes];
     }
 
-    draw(program: ShaderProgram, seconds: number): void {
-        super.draw(program, seconds);
+    draw(seconds: number): void {
+        this.light.rotatingPosition = seconds;
+        this.camera.rotatingPosition = seconds;
 
         this.update(seconds);
 
+        super.draw(seconds);
+        this.renderingContext.standardShader.use();
         this.nodes.forEach(node => {
-            node.draw(program);
+            node.draw();
         });
     }
 

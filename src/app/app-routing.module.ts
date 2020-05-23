@@ -7,6 +7,10 @@ const routes: Routes = [
     loadChildren: () => import('./antikythera/antikythera.module').then(m => m.AntikytheraModule)
   },
   {
+    path: 'harwell',
+    loadChildren: () => import('./harwell/harwell.module').then(m => m.HarwellModule)
+  },
+  {
     path: '',
     redirectTo: '',
     pathMatch: 'full'

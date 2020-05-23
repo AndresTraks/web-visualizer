@@ -1,7 +1,7 @@
 import { Vector3 } from "./vector3";
 import { ShapeFactory } from "./shape-factory";
 
-export class GearMeshFactory extends ShapeFactory{
+export class GearMeshFactory extends ShapeFactory {
     static create(numTeeth: number, outerRadius: number, innerRadius:number, axleRadius: number): Vector3[] {
         return this.createWithAxle(numTeeth, outerRadius, innerRadius, axleRadius);
     }

@@ -1,0 +1,20 @@
+<div id="bodyContainer">
+    <div id="leftPanel">
+        <accordion [isAnimated]="true">
+            <accordion-group>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Settings</span>
+                </button>
+                <label>
+                    <input value="ds"
+                           type="checkbox"
+                           [checked]="isOrtographicProjection"
+                           (change)="onChangeOrtographicProjection();">
+                    Orthographic projection
+                </label>
+            </accordion-group>
+        </accordion>
+    </div>
+    <app-canvas></app-canvas>
+</div>

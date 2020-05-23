@@ -1,9 +1,169 @@
 <div id="bodyContainer">
     <div id="leftPanel">
         <accordion [isAnimated]="true">
-            <accordion-group heading="Settings">
-                <input value="ds" type="checkbox" [checked]="isOrtographicProjection" (change)="onChangeOrtographicProjection();">
-                Orthographic projection
+            <accordion-group>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Settings</span>
+                </button>
+                <label>
+                    <input value="ds"
+                           type="checkbox"
+                           [checked]="isOrtographicProjection"
+                           (change)="onChangeOrtographicProjection();">
+                    Orthographic projection
+                </label>
+            </accordion-group>
+            <accordion-group [isOpen]=true>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Introduction</span>
+                </button>
+                The Antikythera mechanism is a mechanical computer used to predict eclipses and the positions of celestial objects.
+            </accordion-group>
+            <accordion-group>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Gears</span>
+                </button>
+                <ul class="gear-group-a">
+                    <li>
+                        a1
+                        <ul>
+                            <li>
+                                b1
+                            </li>
+                            <li>
+                                b2
+                                <ul class="gear-group-l">
+                                    <li>
+                                        l1
+                                    </li>
+                                    <li>
+                                        l2
+                                        <ul>
+                                            <li>
+                                                m1
+                                            </li>
+                                            <li>
+                                                m2
+                                                <ul class="gear-group-n">
+                                                    <li>
+                                                        n1
+                                                    </li>
+                                                    <li>
+                                                        n2
+                                                        <ul class="gear-group-o">
+                                                            <li>
+                                                                o1
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        n3
+                                                        <ul class="gear-group-p">
+                                                            <li>
+                                                                p1
+                                                            </li>
+                                                            <li>
+                                                                p2
+                                                                <ul>
+                                                                    <li>
+                                                                        q1
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                m3
+                                                <ul class="gear-group-e">
+                                                    <li>
+                                                        e3
+                                                    </li>
+                                                    <li>
+                                                        e4
+                                                        <ul>
+                                                            <li>
+                                                                f1
+                                                            </li>
+                                                            <li>
+                                                                f2
+                                                                <ul>
+                                                                    <li>
+                                                                        g1
+                                                                    </li>
+                                                                    <li>
+                                                                        g2
+                                                                        <ul class="gear-group-h">
+                                                                            <li>
+                                                                                h1
+                                                                            </li>
+                                                                            <li>
+                                                                                h2
+                                                                            </li>
+                                                                        </ul>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <ul class="gear-group-c">
+                                    <li>
+                                        c1
+                                    </li>
+                                    <li>
+                                        c2
+                                        <ul>
+                                            <li>
+                                                d1
+                                            </li>
+                                            <li>
+                                                d2
+                                                <ul>
+                                                    <li>
+                                                        e2
+                                                    </li>
+                                                    <li>
+                                                        e5
+                                                        <ul>
+                                                            <li>
+                                                                k1
+                                                            </li>
+                                                            <li class="gear-group-k">
+                                                                k2
+                                                                <ul>
+                                                                    <li>
+                                                                        e6
+                                                                    </li>
+                                                                    <li>
+                                                                        e1
+                                                                        <ul>
+                                                                            <li>
+                                                                                b3
+                                                                            </li>
+                                                                        </ul>
+                                                                    </li>
+                                                                </ul>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </accordion-group>
         </accordion>
     </div>

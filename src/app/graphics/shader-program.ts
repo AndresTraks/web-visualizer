@@ -3,48 +3,11 @@ export class ShaderProgram {
     worldMatrixLocation: WebGLUniformLocation;
     vertColorLocation: WebGLUniformLocation;
 
-    constructor(private gl: WebGLRenderingContext) {
+    constructor(vertexShaderText: string, fragmentShaderText: string, private gl: WebGLRenderingContext) {
         const vertexShader: WebGLShader = this.gl.createShader(this.gl.VERTEX_SHADER);
         const fragmentShader: WebGLShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
     
-        var vertexShaderText = 
-            `precision mediump float;
-
-            uniform mat4 world_matrix;
-            uniform mat4 view_matrix;
-            uniform mat4 projection_matrix;
-
-            attribute vec3 position;
-            attribute vec3 normal;
-            varying vec3 frag_normal;
-            varying vec3 world_position;
-
-            void main()
-            {
-                frag_normal = mat3(world_matrix) * normal;
-                world_position = (world_matrix * vec4(position, 1)).xyz;
-                gl_Position = projection_matrix * view_matrix * vec4(world_position, 1);
-            }`;
         this.gl.shaderSource(vertexShader, vertexShaderText);
-
-        var fragmentShaderText =
-            `precision mediump float;
-
-            uniform vec3 eye_position;
-            uniform vec3 light_position;
-            uniform vec4 vert_color;
-
-            varying vec3 frag_normal;
-            varying vec3 world_position;
-            void main()
-            {
-                vec3 light_direction = normalize(light_position - world_position);
-                vec3 view_direction = normalize(eye_position - world_position);
-                
-                vec3 diffuse = (vert_color.xyz * 0.25) + clamp(dot(frag_normal, light_direction), 0.0, 1.0) * (vert_color.xyz * 0.75);
-
-                gl_FragColor = vec4(diffuse, vert_color.w);
-            }`
         this.gl.shaderSource(fragmentShader, fragmentShaderText);
     
         this.gl.compileShader(vertexShader);

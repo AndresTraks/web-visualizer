@@ -1,13 +1,21 @@
+import { AppRenderingContext } from '../graphics/app-rendering-context';
+import { ShaderProgram } from '../graphics/shader-program';
 import { Vector3 } from "../graphics/vector3";
-import { ShaderProgram } from "../graphics/shader-program";
 import { Camera } from "./camera";
 import { Light } from "./light";
 
 export class Scene {
+    renderingContext: AppRenderingContext;
+    protected gl: WebGLRenderingContext;
+
     camera: Camera;
     light: Light;
+    clearColor: number[] = [0.5, 0.85, 0.8, 1.0];
 
-    constructor(protected gl: WebGLRenderingContext) {
+    constructor(renderingContext: AppRenderingContext) {
+        this.renderingContext = renderingContext;
+        this.gl = renderingContext.gl;
+
         this.camera = new Camera();
         this.camera.eye = new Vector3(1, 0.45, 0);
         //this.camera.target = new Vector3(-0.21, -0.155, 0.62);
@@ -21,9 +29,13 @@ export class Scene {
         this.light = new Light();
     }
 
-    draw(program: ShaderProgram, seconds: number): void {
-        this.light.rotatingPosition = seconds,
-        this.camera.rotatingPosition = seconds;
+    draw(seconds: number): void {
+        this.setProgramUniforms(this.renderingContext.standardShader);
+        this.setProgramUniforms(this.renderingContext.emitterShader);
+    }
+
+    setProgramUniforms(program: ShaderProgram): void {
+        program.use();
 
         const perspectiveMatrixLocation: WebGLUniformLocation = program.getUniformLocation('projection_matrix');
         this.gl.uniformMatrix4fv(perspectiveMatrixLocation, false, this.camera.projectionMatrix.el);

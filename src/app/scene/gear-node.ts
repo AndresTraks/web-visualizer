@@ -2,30 +2,30 @@
 import { Mesh } from "../graphics/mesh";
 import { GearMeshFactory } from "../graphics/gear-mesh-factory";
 import { SceneNode } from "./scene-node";
-import { ShaderProgram } from "../graphics/shader-program";
 import { ShapeFactory } from "../graphics/shape-factory";
 import { Vector3 } from "../graphics/vector3";
 import { Matrix4 } from "../graphics/matrix4";
+import { AppRenderingContext } from '../graphics/app-rendering-context';
 
 export class GearNode extends SceneNode {
     angle: number;
 
-    static createFace(numTeeth: number, outerRadius: number, gl: WebGLRenderingContext): GearNode {
+    static createFace(numTeeth: number, outerRadius: number, renderingContext: AppRenderingContext): GearNode {
         const innerRadius = GearNode.getRightAngleToothInnerRadius(outerRadius, numTeeth);
-        const mesh = new Mesh(GearMeshFactory.createFace(numTeeth, outerRadius, innerRadius), gl);
-        return new GearNode(numTeeth, outerRadius, innerRadius, null, mesh, gl);
+        const mesh = new Mesh(GearMeshFactory.createFace(numTeeth, outerRadius, innerRadius), renderingContext.gl);
+        return new GearNode(numTeeth, outerRadius, innerRadius, null, mesh, renderingContext);
     }
 
-    static create(numTeeth: number, outerRadius: number, axleRadius: number, gl: WebGLRenderingContext): GearNode {
+    static create(numTeeth: number, outerRadius: number, axleRadius: number, renderingContext: AppRenderingContext): GearNode {
         const innerRadius = GearNode.getRightAngleToothInnerRadius(outerRadius, numTeeth);
-        const mesh = new Mesh(GearMeshFactory.create(numTeeth, outerRadius, innerRadius, axleRadius), gl);
-        return new GearNode(numTeeth, outerRadius, innerRadius, axleRadius, mesh, gl);
+        const mesh = new Mesh(GearMeshFactory.create(numTeeth, outerRadius, innerRadius, axleRadius), renderingContext.gl);
+        return new GearNode(numTeeth, outerRadius, innerRadius, axleRadius, mesh, renderingContext);
     }
 
-    static createClosed(numTeeth: number, outerRadius: number, gl: WebGLRenderingContext): GearNode {
+    static createClosed(numTeeth: number, outerRadius: number, renderingContext: AppRenderingContext): GearNode {
         const innerRadius = GearNode.getRightAngleToothInnerRadius(outerRadius, numTeeth);
-        const mesh = new Mesh(GearMeshFactory.createClosed(numTeeth, outerRadius, innerRadius), gl);
-        return new GearNode(numTeeth, outerRadius, innerRadius, null, mesh, gl);
+        const mesh = new Mesh(GearMeshFactory.createClosed(numTeeth, outerRadius, innerRadius), renderingContext.gl);
+        return new GearNode(numTeeth, outerRadius, innerRadius, null, mesh, renderingContext);
     }
 
     constructor(private numTeeth: number,
@@ -33,8 +33,8 @@ export class GearNode extends SceneNode {
         private innerRadius: number,
         private axleRadius: number,
         mesh: Mesh,
-        gl: WebGLRenderingContext) {
-        super(gl);
+        renderingContext: AppRenderingContext) {
+        super(renderingContext);
         this.meshes = [mesh];
     }
 
@@ -53,10 +53,6 @@ export class GearNode extends SceneNode {
         const crossMesh2 = new Mesh(ShapeFactory.createBox(new Vector3(width, thickness, this.axleRadius)), this.gl);
         crossMesh2.childWorldTransform = Matrix4.translation(new Vector3(0, -0.011, 0));
         this.meshes.push(crossMesh1, crossMesh2);
-    }
-
-    draw(program: ShaderProgram): void {
-        super.draw(program);
     }
 
     setAttributesToParent(parent: GearNode, offset: number): void {

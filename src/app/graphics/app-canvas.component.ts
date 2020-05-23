@@ -1,5 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ShaderProgram } from './shader-program';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Scene } from '../scene/scene';
 
 @Component({
@@ -11,25 +10,16 @@ export class AppCanvasComponent {
 
     private scene: Scene;
     gl: WebGLRenderingContext;
-    program: ShaderProgram;
     glNotSupported: boolean;
 
-    setScene(scene: Scene, gl: WebGLRenderingContext) {
-        if (!gl) {
+    setScene(scene: Scene) {
+        if (!scene.renderingContext) {
             this.glNotSupported = true;
         }
 
-        this.gl = gl;
+        this.gl = scene.renderingContext.gl;
         this.scene = scene;
         this.scene.camera.aspect = this.surface.nativeElement.width / this.surface.nativeElement.height;
-
-        this.program = new ShaderProgram(this.gl);
-        this.program.use();
-        this.gl.enable(this.gl.DEPTH_TEST);
-        this.gl.enable(this.gl.CULL_FACE);
-        this.gl.cullFace(this.gl.BACK);
-        this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 
         requestAnimationFrame(this.render.bind(this));
     }
@@ -37,11 +27,11 @@ export class AppCanvasComponent {
     private render(timestamp: DOMHighResTimeStamp): void {
         const seconds = timestamp.valueOf() / 1000;
 
-        this.gl.clearColor(0.5, 0.85, 0.8, 1.0);
+        const color = this.scene.clearColor;
+        this.gl.clearColor(color[0], color[1], color[2], color[3]);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        this.program.use();
-        this.scene.draw(this.program, seconds);
+        this.scene.draw(seconds);
         this.gl.useProgram(null);
 
         requestAnimationFrame(this.render.bind(this));

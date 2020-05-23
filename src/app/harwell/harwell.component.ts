@@ -1,29 +1,29 @@
 import { Component, ViewChild, OnInit } from "@angular/core";
-import { Title } from '@angular/platform-browser';
-import { AntikytheraScene } from "./antikythera-scene";
 import { AppCanvasComponent } from "../graphics/app-canvas.component";
+import { HarwellScene } from './harwell-scene';
+import { Title } from '@angular/platform-browser';
 import { AppRenderingContext } from '../graphics/app-rendering-context';
 
 @Component({
-    selector: 'antikythera-component',
-    templateUrl: './antikythera.component.html',
-    styleUrls: ['./antikythera.component.css']
+    selector: 'harwell-component',
+    templateUrl: './harwell.component.html',
+    styleUrls: ['./harwell.component.css']
 })
-export class AntikytheraComponent implements OnInit {
-    scene: AntikytheraScene;
+export class HarwellComponent implements OnInit {
+    scene: HarwellScene;
     @ViewChild(AppCanvasComponent, { static: true }) appCanvas: AppCanvasComponent;
 
     isOrtographicProjection: boolean = false;
 
     constructor(titleService: Title) {
-        titleService.setTitle("Antikythera");
+        titleService.setTitle("Harwell Dekatron");
     }
 
     ngOnInit(): void {
         const gl = this.appCanvas.surface.nativeElement.getContext('webgl');
         if (gl) {
             const renderingContext = new AppRenderingContext(gl);
-            this.scene = new AntikytheraScene(renderingContext);
+            this.scene = new HarwellScene(renderingContext);
             this.appCanvas.setScene(this.scene);
         }
     }
