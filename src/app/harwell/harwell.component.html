@@ -6,8 +6,12 @@
                     <span class="badge badge-arrow float-left">&#x2B9E;</span>
                     <span class="float-left">Control</span>
                 </button>
-                <div class="btn-toolbar">
-                    <button type="button" class="btn btn-primary mr-2" (click)="onStep()">Step</button>
+                <div class="btn-toolbar mb-2">
+                    <button
+                        type="button"
+                        class="btn btn-primary mr-2"
+                        (click)="onStep()"
+                        [disabled]="scene.processor.state.finished">Step</button>
                     <button 
                         type="button"
                         class="btn btn-primary mr-2"
@@ -15,7 +19,10 @@
                         [disabled]="scene.processor.state.finished">
                         {{scene.isSingleStepping ? "Run" : "Stop"}}
                     </button>
+                    <br>
                 </div>
+                <div ></div>
+                <p style="min-height: 3em;">Next: {{scene.nextInstructionText}}</p>
             </accordion-group>
             <accordion-group [isOpen]=true>
                 <button class="btn btn-link btn-block clearfix" accordion-heading type="button">

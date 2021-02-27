@@ -52,6 +52,10 @@ export class Tape {
         return this.peekEntry() as TapeData;
     }
 
+    peekTapeDataAfterInstruction(): TapeData {
+        return this.peekEntryAt(this.index + 1) as TapeData;
+    }
+
     readEntry(): TapeEntry {
         const entry: TapeEntry = this.peekEntry();
         this.index++;
@@ -66,5 +70,12 @@ export class Tape {
             throw new Error("No entry on tape to read.");
         }
         return this.entries[this.index];
+    }
+
+    peekEntryAt(index: number): TapeEntry {
+        if (this.entries.length === 0) {
+            throw new Error("No entry on tape to read.");
+        }
+        return this.entries[index];
     }
 }

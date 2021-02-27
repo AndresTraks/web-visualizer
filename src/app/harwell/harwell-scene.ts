@@ -8,20 +8,26 @@ import { HarwellProcessor } from './harwell-processor';
 import { MemoryBank } from './memory-bank';
 import { TubeFactory } from './tube-mesh-factory';
 import { MemoryRegister } from './memory-register';
+import { TapeEntry } from './tape/tape-entry';
+import { Disassembler } from './disassembler';
 
 export class HarwellScene extends Scene {
     processor: HarwellProcessor;
+    disassembler: Disassembler;
 
     memoryBanks: MemoryBank[];
     nodes: SceneNode[];
 
     isSingleStepping: boolean = true;
     isSingleStepDone: boolean = true;
+    nextInstructionText: string;
 
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
         this.processor = new HarwellProcessor();
-        this.loadExampleProgram2();
+        this.disassembler = new Disassembler(this.processor);
+        this.loadExampleProgram1();
+        this.disassembleNextInstruction();
 
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
@@ -127,18 +133,8 @@ export class HarwellScene extends Scene {
     draw(seconds: number): void {
         super.draw(seconds);
 
-        if (this.isSingleStepping) {
-            if (!this.isSingleStepDone) {
-                this.processor.step();
-                this.isSingleStepDone = true;
-            }
-        } else {
-            this.processor.step();
-        }
-        if (this.processor.state.finished) {
-            this.isSingleStepping = true;
-        }
-        this.copyState();
+        this.runProcessorForFrame();
+        this.copyStateToRenderObject();
 
         this.renderingContext.standardShader.use();
         this.nodes.forEach(node => {
@@ -146,15 +142,31 @@ export class HarwellScene extends Scene {
         });
     }
 
-    stepProcessor() {
+    stepProcessor(): void {
         this.isSingleStepDone = false;
     }
 
-    runProcessor() {
+    runProcessor(): void {
         this.isSingleStepping = !this.isSingleStepping;
     }
 
-    private copyState() {
+    runProcessorForFrame(): void {
+        if (this.isSingleStepping) {
+            if (!this.isSingleStepDone) {
+                this.processor.step();
+                this.disassembleNextInstruction();
+                this.isSingleStepDone = true;
+            }
+        } else {
+            this.processor.step();
+            this.disassembleNextInstruction();
+        }
+        if (this.processor.state.finished) {
+            this.isSingleStepping = true;
+        }
+    }
+
+    private copyStateToRenderObject(): void {
         for (let b = 0; b < 9; b++) {
             const bank: MemoryBank = this.memoryBanks[b];
             for (let r = 0; r < 10; r++) {
@@ -163,5 +175,13 @@ export class HarwellScene extends Scene {
                 register.value = this.processor.peek(address);
             }
         }
+    }
+
+    private disassembleNextInstruction(): void {
+        const nextEntry: TapeEntry = this.processor.currentTape.peekEntry();
+        this.nextInstructionText = this.processor.state.finished
+            ? "(finished)"
+            : this.disassembler.disassemble(nextEntry);
+        console.log(this.nextInstructionText);
     }
 }

@@ -73,8 +73,6 @@ export class HarwellProcessor {
                 const blockNumber: number = Number(addressA[1]);
                 const tapeNumber: number = Number(addressB);
                 this.searchBlock(blockNumber, tapeNumber);
-            } else {
-                console.log("NO TRANSFER");
             }
             return;
         }
@@ -83,7 +81,6 @@ export class HarwellProcessor {
                 if (addressB === "00") {
                     this.finish();
                 }
-                return;
             case "11":
                 this.testPositive(addressB);
                 return;
@@ -109,102 +106,72 @@ export class HarwellProcessor {
     }
 
     add(addressA: string, addressB: string): void {
+        const addend: number = this.load(addressA);
         if (addressB === "01") {
-            this.print(addressA);
+            this.print(addend);
             return;
         }
-        const current: number = this.peek(addressB);
-        const addend: number = this.load(addressA);
-        console.log("[" + addressB + "] += " + "[" + addressA + "] (" + current + " + " + addend + " = " + (current + addend).toFixed(7) + ")");
         this.state.add(addressB, addend);
     }
 
     addAndClear(addressA: string, addressB: string): void {
-        if (addressB === "00") {
-            console.log("Clear " + addressA);
-        } else {
-            this.add(addressA, addressB);
-
-        }
+        this.add(addressA, addressB);
         this.state.clear(addressA);
     }
 
     subtract(addressA: string, addressB: string): void {
+        const subtrahend: number = this.load(addressA);
         if (addressB === "01") {
-            this.print(addressA);
+            this.print(subtrahend);
             return;
         }
-        const current: number = this.peek(addressB);
-        const subtrahend: number = this.load(addressA);
-        console.log("[" + addressB + "] -= " + "[" + addressA + "] (" + current + " - " + subtrahend + " = " + (current - subtrahend).toFixed(7) + ")");
         this.state.subtract(addressB, subtrahend);
     }
 
     subtractAndClear(addressA: string, addressB: string): void {
-        if (addressB === "00") {
-            console.log("Clear " + addressA);
-        } else {
-            this.subtract(addressA, addressB);
-
-        }
+        this.subtract(addressA, addressB);
         this.state.clear(addressA);
     }
 
     multiply(addressA: string, addressB: string) {
-        const multiplicand: number = this.peek(addressA);
-        const multiplier: number = this.peek(addressA);
-        console.log("[09] = " + "[" + addressA + "] * [" + addressB + "] (" + multiplicand + " * " + multiplier + " = " + (multiplicand * multiplier).toFixed(7) + ")");
         this.state.multiply(addressA, addressB);
     }
 
     divide(addressA: string, addressB: string) {
-        const dividend: number = this.peek("09");
-        const divisor: number = this.peek(addressA);
-        console.log("[" + addressB + "] = " + "[09] / [" + addressA + "] (" + dividend + " / " + divisor + " = " + (dividend / divisor).toFixed(7) + ")");
-        console.log("[09] = " + "[09] % [" + addressA + "] (" + dividend + " % " + divisor + " = " + (dividend % divisor).toFixed(7) + ")");
         this.state.divide(addressA, addressB);
     }
 
     testPositive(address: string) {
-        console.log("TEST POSITIVE [" + address + "] (" + this.peek(address) + ")");
         this.state.yes = this.load(address) > 0;
     }
 
     testNegative(address: string) {
-        console.log("TEST NEGATIVE [" + address + "] (" + this.peek(address) + ")");
         this.state.yes = this.load(address) < 0;
     }
 
     searchBlock(blockNumber: number, tapeNumber: number): void {
-        console.log("SEARCH for block " + blockNumber + " on tape " + tapeNumber);
         this.tapes[tapeNumber].searchBlock(blockNumber);
     }
 
     transferControl(addressB: string): void {
-        console.log("TRANFER to " + addressB);
         this.state.tapeNumber = Number(addressB);
     }
 
     finish(): void {
-        console.log("FINISH");
         this.state.finished = true;
     }
 
     printLayoutReference1(): void {
-        console.log("PRINT LAYOUT REFERENCE 1");
         this.state.printLayout = 1;
     }
 
     printLayoutReference2(): void {
-        console.log("PRINT LAYOUT REFERENCE 2");
         this.state.printLayout = 2;
     }
 
-    print(address: string): void {
-        const value: number = this.load(address);
+    print(value: number): void {
         const sign: string = value < 0 ? '-' : '+';
         const valueString: string = sign + value.toFixed(7);
-        console.log("PRINT " + valueString);
         if (this.state.printLayout === 1) {
             this.output[this.output.length - 1] += valueString + "   ";
         } else if (this.state.printLayout === 2) {
@@ -218,6 +185,10 @@ export class HarwellProcessor {
             return this.currentTape.peekData().valueOf();
         }
         return this.state.get(address);
+    }
+
+    peekTapeDataAfterInstruction(): number {
+        return this.currentTape.peekTapeDataAfterInstruction().valueOf();
     }
 
     load(address: string): number {
