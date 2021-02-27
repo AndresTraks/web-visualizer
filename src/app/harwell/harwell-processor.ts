@@ -7,12 +7,12 @@ import { Block } from './tape/block';
 export class HarwellProcessor {
     tapes: Map<number, Tape>;
     state: HarwellState;
-    output: string;
+    output: string[];
 
     constructor() {
         this.tapes = new Map<number, Tape>();
         this.state = new HarwellState();
-        this.output = "";
+        this.output = [""];
     }
 
     setTape(tapeNumber: number, data: string): void {
@@ -188,7 +188,6 @@ export class HarwellProcessor {
     finish(): void {
         console.log("FINISH");
         this.state.finished = true;
-        console.log(this.output);
     }
 
     printLayoutReference1(): void {
@@ -207,9 +206,10 @@ export class HarwellProcessor {
         const valueString: string = sign + value.toFixed(7);
         console.log("PRINT " + valueString);
         if (this.state.printLayout === 1) {
-            this.output += valueString + "   ";
+            this.output[this.output.length - 1] += valueString + "   ";
         } else if (this.state.printLayout === 2) {
-            this.output += valueString + "\n";
+            this.output[this.output.length - 1] += valueString;
+            this.output.push("");
         }
     }
 

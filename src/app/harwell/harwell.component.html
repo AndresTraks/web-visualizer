@@ -1,6 +1,29 @@
 <div id="bodyContainer">
     <div id="leftPanel">
         <accordion [isAnimated]="true">
+            <accordion-group [isOpen]=true>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Control</span>
+                </button>
+                <div class="btn-toolbar">
+                    <button type="button" class="btn btn-primary mr-2" (click)="onStep()">Step</button>
+                    <button 
+                        type="button"
+                        class="btn btn-primary mr-2"
+                        (click)="onRun()"
+                        [disabled]="scene.processor.state.finished">
+                        {{scene.isSingleStepping ? "Run" : "Stop"}}
+                    </button>
+                </div>
+            </accordion-group>
+            <accordion-group [isOpen]=true>
+                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
+                    <span class="float-left">Output</span>
+                </button>
+                <p class="mb-0" *ngFor="let line of scene.processor.output">{{line}}</p>
+            </accordion-group>
             <accordion-group>
                 <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
                     <span class="badge badge-arrow float-left">&#x2B9E;</span>
@@ -10,7 +33,7 @@
                     <input value="ds"
                            type="checkbox"
                            [checked]="isOrtographicProjection"
-                           (change)="onChangeOrtographicProjection();">
+                           (change)="onChangeOrtographicProjection()">
                     Orthographic projection
                 </label>
             </accordion-group>

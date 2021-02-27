@@ -15,6 +15,9 @@ export class HarwellScene extends Scene {
     memoryBanks: MemoryBank[];
     nodes: SceneNode[];
 
+    isSingleStepping: boolean = true;
+    isSingleStepDone: boolean = true;
+
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
         this.processor = new HarwellProcessor();
@@ -124,13 +127,31 @@ export class HarwellScene extends Scene {
     draw(seconds: number): void {
         super.draw(seconds);
 
-        this.processor.step();
+        if (this.isSingleStepping) {
+            if (!this.isSingleStepDone) {
+                this.processor.step();
+                this.isSingleStepDone = true;
+            }
+        } else {
+            this.processor.step();
+        }
+        if (this.processor.state.finished) {
+            this.isSingleStepping = true;
+        }
         this.copyState();
 
         this.renderingContext.standardShader.use();
         this.nodes.forEach(node => {
             node.draw();
         });
+    }
+
+    stepProcessor() {
+        this.isSingleStepDone = false;
+    }
+
+    runProcessor() {
+        this.isSingleStepping = !this.isSingleStepping;
     }
 
     private copyState() {
