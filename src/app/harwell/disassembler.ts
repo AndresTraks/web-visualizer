@@ -79,9 +79,7 @@ export class Disassembler {
     }
 
     private disassembleAdd(instruction: HarwellInstruction): string {
-        const addend: number = (instruction.addressA == "01")
-            ? this.processor.peekTapeDataAfterInstruction()
-            : this.processor.peek(instruction.addressA);
+        const addend: number = this.processor.peekDataAfterInstruction(instruction.addressA);
         if (instruction.addressB === "01") {
             return "PRINT [" + instruction.addressA + "] (" + addend + ")";
         }
@@ -92,9 +90,7 @@ export class Disassembler {
     }
 
     private disassembleAddAndClear(instruction: HarwellInstruction): string {
-        const addend: number = (instruction.addressA == "01")
-        ? this.processor.peekTapeDataAfterInstruction()
-        : this.processor.peek(instruction.addressA);
+        const addend: number = this.processor.peekDataAfterInstruction(instruction.addressA);
         if (instruction.addressB === "00") {
             return "CLEAR [" + instruction.addressA + "] (" + addend + ")";
         }
@@ -108,9 +104,7 @@ export class Disassembler {
     }
 
     private disassembleSubtract(instruction: HarwellInstruction): string {
-        const subtrahend: number = (instruction.addressA == "01")
-            ? this.processor.peekTapeDataAfterInstruction()
-            : this.processor.peek(instruction.addressA);
+        const subtrahend: number = this.processor.peekDataAfterInstruction(instruction.addressA);
         if (instruction.addressB === "00") {
             return "CLEAR [" + instruction.addressA + "] (" + subtrahend + ")";
         }
@@ -124,9 +118,7 @@ export class Disassembler {
     }
 
     private disassembleSubtractAndClear(instruction: HarwellInstruction): string {
-        const subtrahend: number = (instruction.addressA == "01")
-            ? this.processor.peekTapeDataAfterInstruction()
-            : this.processor.peek(instruction.addressA);
+        const subtrahend: number = this.processor.peekDataAfterInstruction(instruction.addressA);
         const current: number = this.processor.peek(instruction.addressB);
         const result: string = this.formatNumberResult(current - subtrahend);
         return "[" + instruction.addressB + "] -= "
@@ -135,7 +127,7 @@ export class Disassembler {
 
     private disassembleMultiply(instruction: HarwellInstruction): string {
         const multiplicand: number = this.processor.peek(instruction.addressA);
-        const multiplier: number = this.processor.peek(instruction.addressA);
+        const multiplier: number = this.processor.peek(instruction.addressB);
         const result: string = this.formatNumberResult(multiplicand * multiplier);
         return "[09] = " + "[" + instruction.addressA + "] * [" + instruction.addressB + "]"
             + " (" + multiplicand + " * " + multiplier + " = " + result + ")";

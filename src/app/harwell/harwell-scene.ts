@@ -11,6 +11,11 @@ import { MemoryRegister } from './memory-register';
 import { TapeEntry } from './tape/tape-entry';
 import { Disassembler } from './disassembler';
 
+class ProgramDescription {
+    constructor(public title: string, public value: string, public initFn: () => void) {
+    }
+}
+
 export class HarwellScene extends Scene {
     processor: HarwellProcessor;
     disassembler: Disassembler;
@@ -21,6 +26,10 @@ export class HarwellScene extends Scene {
     isSingleStepping: boolean = true;
     isSingleStepDone: boolean = true;
     nextInstructionText: string;
+
+    programList: ProgramDescription[] = [
+        new ProgramDescription("Example program 1", "1", () => this.loadExampleProgram1()),
+        new ProgramDescription("Example program 2", "2", () => this.loadExampleProgram2())];
 
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
@@ -56,12 +65,7 @@ export class HarwellScene extends Scene {
     }
 
     onProgramChange(selected: string): void {
-        if (selected === "1") {
-            this.loadExampleProgram1();
-        }
-        if (selected === "2") {
-            this.loadExampleProgram2();
-        }
+        this.programList.find(p => p.value === selected).initFn();
     }
 
     loadExampleProgram1(): void {

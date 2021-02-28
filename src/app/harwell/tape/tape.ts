@@ -53,7 +53,7 @@ export class Tape {
         return this.peekEntry() as TapeData;
     }
 
-    peekTapeDataAfterInstruction(): TapeData {
+    peekDataAfterInstruction(): TapeData {
         return this.peekEntryAt(this.index + 1) as TapeData;
     }
 

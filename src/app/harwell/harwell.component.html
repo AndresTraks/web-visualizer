@@ -6,9 +6,9 @@
                     <span class="badge badge-arrow float-left">&#x2B9E;</span>
                     <span class="float-left">Control</span>
                 </button>
-                <select (change)="scene.onProgramChange($event.target.value)" class="form-select mb-3" aria-label="Default select example">
-                    <option value="1" selected>Example program 1</option>
-                    <option value="2">Example program 2</option>
+                <select (change)="scene.onProgramChange($event.target.value)" class="mb-3">
+                    <option *ngFor="let option of scene.programList"
+                        [value]="option.value">{{option.title}}</option>
                   </select>
                 <div class="btn-toolbar mb-3">
                     <button

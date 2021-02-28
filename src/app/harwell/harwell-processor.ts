@@ -181,19 +181,35 @@ export class HarwellProcessor {
     }
 
     peek(address: string): number {
-        if (address == "01") {
-            return this.currentTape.peekData().valueOf();
+        if (address[0] === '0') {
+            const specialInput: number = Number(address[1]);
+            if (specialInput > 0 && specialInput <= 7) {
+                return this.tapes[specialInput].peekData().valueOf();
+            }
         }
         return this.state.get(address);
     }
 
-    peekTapeDataAfterInstruction(): number {
-        return this.currentTape.peekTapeDataAfterInstruction().valueOf();
+    peekDataAfterInstruction(address: string): number {
+        // Used on disassembly when the next instruction has not yet been read,
+        // but data following the instruction is an input operand.
+        if (address[0] === '0') {
+            const specialInput: number = Number(address[1]);
+            if (specialInput > 0 && specialInput <= 7) {
+                if (this.state.tapeNumber === specialInput) {
+                    return this.tapes[specialInput].peekDataAfterInstruction().valueOf();
+                }
+            }
+        }
+        return this.peek(address);
     }
 
     load(address: string): number {
-        if (address == "01") {
-            return this.currentTape.readData().valueOf();
+        if (address[0] === '0') {
+            const specialInput: number = Number(address[1]);
+            if (specialInput > 0 && specialInput <= 7) {
+                return this.tapes[specialInput].readData().valueOf();
+            }
         }
         return this.state.get(address);
     }
