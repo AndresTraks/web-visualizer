@@ -30,8 +30,8 @@
                     </button>
                     <br>
                 </div>
-                <div ></div>
-                <p style="min-height: 4em;">Next: {{scene.nextInstructionText}}</p>
+                <p class="mb-0">Tape {{scene.processor.state.tapeNumber}}, block {{scene.processor.currentTape.blockNumber}}</p>
+                <p style="min-height: 5em;">Order: {{scene.nextInstructionText}}</p>
             </accordion-group>
             <accordion-group [isOpen]=true>
                 <button class="btn btn-link btn-block clearfix" accordion-heading type="button">

@@ -5,6 +5,7 @@ import { Block } from './block';
 
 export class Tape {
     index: number = 0;
+    blockNumber: number;
 
     private constructor(private entries: TapeEntry[]) {
     }
@@ -61,6 +62,9 @@ export class Tape {
         this.index++;
         if (this.index >= this.entries.length) {
             this.index = 0;
+        }
+        if (entry instanceof Block) {
+            this.blockNumber = entry.blockNumber;
         }
         return entry;
     }

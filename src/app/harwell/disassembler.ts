@@ -9,13 +9,11 @@ export class Disassembler {
 
     disassemble(entry: TapeEntry): string {
         if (entry instanceof HarwellInstruction) {
-            const instruction: HarwellInstruction = entry as HarwellInstruction;
-            return instruction.code + " " + this.disassembleInstruction(instruction);
+            return entry.code + " " + this.disassembleInstruction(entry);
         }
         
         if (entry instanceof Block) {
-            const block: Block = entry as Block;
-            return "Block ID " + block.blockNumber.toString();
+            return "Block ID " + entry.blockNumber.toString();
         }
 
         throw Error("Cannot disassemble tape entry.");
@@ -138,7 +136,7 @@ export class Disassembler {
     private disassembleMultiply(instruction: HarwellInstruction): string {
         const multiplicand: number = this.processor.peek(instruction.addressA);
         const multiplier: number = this.processor.peek(instruction.addressA);
-        const result: string = (multiplicand * multiplier).toFixed(7);
+        const result: string = this.formatNumberResult(multiplicand * multiplier);
         return "[09] = " + "[" + instruction.addressA + "] * [" + instruction.addressB + "]"
             + " (" + multiplicand + " * " + multiplier + " = " + result + ")";
     }
