@@ -28,14 +28,6 @@ export class HarwellComponent implements OnInit {
         }
     }
 
-    onStep(): void {
-        this.scene.stepProcessor();
-    }
-
-    onRun(): void {
-        this.scene.runProcessor();
-    }
-
     onChangeOrtographicProjection(): void {
         this.isOrtographicProjection = !this.isOrtographicProjection;
         this.scene.camera.orthographic = this.isOrtographicProjection;

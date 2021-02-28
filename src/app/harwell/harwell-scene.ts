@@ -27,7 +27,6 @@ export class HarwellScene extends Scene {
         this.processor = new HarwellProcessor();
         this.disassembler = new Disassembler(this.processor);
         this.loadExampleProgram1();
-        this.disassembleNextInstruction();
 
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
@@ -52,8 +51,17 @@ export class HarwellScene extends Scene {
         this.clearColor = [0.1, 0.1, 0.1, 1];
     }
 
-    createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
+    private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
         return new MemoryBank(memoryUnitMesh, tubeMesh, indicatorMesh, position, this.renderingContext);
+    }
+
+    onProgramChange(selected: string): void {
+        if (selected === "1") {
+            this.loadExampleProgram1();
+        }
+        if (selected === "2") {
+            this.loadExampleProgram2();
+        }
     }
 
     loadExampleProgram1(): void {
@@ -90,6 +98,7 @@ export class HarwellScene extends Scene {
             "05202\n" +
             "05202\n" +
             "00100\n");
+        this.resetProgram();
     }
 
     loadExampleProgram2(): void {
@@ -128,6 +137,16 @@ export class HarwellScene extends Scene {
         this.processor.setTape(3,
             "[3]\n" +
             "00100\n");
+        this.resetProgram();
+    }
+
+    resetProgram(): void {
+        this.processor.output = [""];
+        this.isSingleStepping = true;
+        this.isSingleStepDone = true;
+        this.processor.state.finished = false;
+        this.processor.state.tapeNumber = 1;
+        this.disassembleNextInstruction();
     }
 
     draw(seconds: number): void {
@@ -143,6 +162,7 @@ export class HarwellScene extends Scene {
     }
 
     stepProcessor(): void {
+        this.isSingleStepping = true;
         this.isSingleStepDone = false;
     }
 

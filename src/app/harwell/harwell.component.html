@@ -6,23 +6,32 @@
                     <span class="badge badge-arrow float-left">&#x2B9E;</span>
                     <span class="float-left">Control</span>
                 </button>
-                <div class="btn-toolbar mb-2">
+                <select (change)="scene.onProgramChange($event.target.value)" class="form-select mb-3" aria-label="Default select example">
+                    <option value="1" selected>Example program 1</option>
+                    <option value="2">Example program 2</option>
+                  </select>
+                <div class="btn-toolbar mb-3">
                     <button
                         type="button"
                         class="btn btn-primary mr-2"
-                        (click)="onStep()"
+                        (click)="scene.stepProcessor()"
                         [disabled]="scene.processor.state.finished">Step</button>
                     <button 
                         type="button"
-                        class="btn btn-primary mr-2"
-                        (click)="onRun()"
+                        class="btn btn-primary mr-4"
+                        (click)="scene.runProcessor()"
                         [disabled]="scene.processor.state.finished">
                         {{scene.isSingleStepping ? "Run" : "Stop"}}
+                    </button>
+                    <button 
+                        type="button"
+                        class="btn btn-primary mr-2"
+                        (click)="scene.resetProgram()">Reload
                     </button>
                     <br>
                 </div>
                 <div ></div>
-                <p style="min-height: 3em;">Next: {{scene.nextInstructionText}}</p>
+                <p style="min-height: 4em;">Next: {{scene.nextInstructionText}}</p>
             </accordion-group>
             <accordion-group [isOpen]=true>
                 <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
