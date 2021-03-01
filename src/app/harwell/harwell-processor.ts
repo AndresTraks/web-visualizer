@@ -3,6 +3,7 @@ import { HarwellInstruction } from './harwell-instruction';
 import { Tape } from './tape/tape';
 import { TapeEntry } from './tape/tape-entry';
 import { Block } from './tape/block';
+import { Assembler } from './assembler';
 
 export class HarwellProcessor {
     tapes: Map<number, Tape>;
@@ -15,8 +16,8 @@ export class HarwellProcessor {
         this.output = [""];
     }
 
-    setTape(tapeNumber: number, data: string): void {
-        this.tapes[tapeNumber] = Tape.parse(data);
+    setProgram(programText: string): void {
+        this.tapes = Assembler.assemble(programText);
     }
 
     get currentTape(): Tape {

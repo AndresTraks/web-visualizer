@@ -8,7 +8,7 @@
                 </button>
                 <select (change)="scene.onProgramChange($event.target.value)" class="mb-3">
                     <option *ngFor="let option of scene.programList"
-                        [value]="option.value">{{option.title}}</option>
+                        [value]="option.id">{{option.title}}</option>
                   </select>
                 <div class="btn-toolbar mb-3">
                     <button

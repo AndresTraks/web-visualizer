@@ -7,23 +7,7 @@ export class Tape {
     index: number = 0;
     blockNumber: number;
 
-    private constructor(private entries: TapeEntry[]) {
-    }
-
-    static parse(data: string): Tape {
-        const entries: TapeEntry[] = [];
-        data.split('\n').forEach(entry => {
-            if (entry.length === 5) {
-                entries.push(HarwellInstruction.fromCode(entry));
-            } else if (entry.length === 9) {
-                const value: number = Number(entry) / 10000000;
-                entries.push(new TapeData(value));
-            } else if (entry.length === 3) {
-                const blockNumber: number = Number(entry.substr(1, 1));
-                entries.push(new Block(blockNumber));
-            }
-        });
-        return new Tape(entries);
+    constructor(private entries: TapeEntry[]) {
     }
 
     searchBlock(blockNumber: number): void {

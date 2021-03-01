@@ -10,11 +10,8 @@ import { TubeFactory } from './tube-mesh-factory';
 import { MemoryRegister } from './memory-register';
 import { TapeEntry } from './tape/tape-entry';
 import { Disassembler } from './disassembler';
-
-class ProgramDescription {
-    constructor(public title: string, public value: string, public initFn: () => void) {
-    }
-}
+import { ExamplePrograms } from './example-programs';
+import { ProgramDescription } from './program-description';
 
 export class HarwellScene extends Scene {
     processor: HarwellProcessor;
@@ -27,15 +24,14 @@ export class HarwellScene extends Scene {
     isSingleStepDone: boolean = true;
     nextInstructionText: string;
 
-    programList: ProgramDescription[] = [
-        new ProgramDescription("Example program 1", "1", () => this.loadExampleProgram1()),
-        new ProgramDescription("Example program 2", "2", () => this.loadExampleProgram2())];
+    programList: ProgramDescription[] = ExamplePrograms.programList;
 
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
         this.processor = new HarwellProcessor();
         this.disassembler = new Disassembler(this.processor);
-        this.loadExampleProgram1();
+
+        this.loadFirstProgram();
 
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
@@ -65,83 +61,13 @@ export class HarwellScene extends Scene {
     }
 
     onProgramChange(selected: string): void {
-        this.programList.find(p => p.value === selected).initFn();
-    }
-
-    loadExampleProgram1(): void {
-        this.processor.setTape(1,
-            "[1]\n" +
-            "20900\n" +
-            "21000\n" +
-            "22000\n" +
-            "23000\n" +
-            "24000\n" +
-            "25000\n" +
-            "10110\n" +
-            "+10000000\n" +
-            "10120\n" +
-            "+01000000\n" +
-            "10130\n" +
-            "+15500000\n" +
-            "03202\n" +
-            "02102\n");
-        this.processor.setTape(2,
-            "[2]\n" +
-            "11040\n" +
-            "51040\n" +
-            "07300\n" +
-            "11001\n" +
-            "07400\n" +
-            "10901\n" +
-            "12010\n" +
-            "13040\n" +
-            "31040\n" +
-            "01140\n" +
-            "24000\n" +
-            "20900\n" +
-            "05202\n" +
-            "05202\n" +
-            "00100\n");
+        const program: ProgramDescription = this.programList.find(p => p.id == selected);
+        this.processor.setProgram(program.text);
         this.resetProgram();
     }
 
-    loadExampleProgram2(): void {
-        this.processor.setTape(1,
-            "[1]\n" +
-            "20900\n" +
-            "21000\n" +
-            "22000\n" +
-            "23000\n" +
-            "24000\n" +
-            "25000\n" +
-            "10110\n" +
-            "+05000000\n" +
-            "10120\n" +
-            "+90000000\n" +
-            "10130\n" +
-            "+10000000\n" +
-            "10140\n" +
-            "+20000000\n" +
-            "11050\n" +
-            "03202\n" +
-            "02102\n");
-        this.processor.setTape(2,
-            "[2]\n" +
-            "07400\n" +
-            "11001\n" +
-            "33020\n" +
-            "01220\n" +
-            "05303\n" +
-            "02203\n" +
-            "25009\n" +
-            "64050\n" +
-            "20900\n" +
-            "15010\n" +
-            "03202\n");
-        this.processor.setTape(3,
-            "[3]\n" +
-            "00100\n");
-        this.resetProgram();
+    private loadFirstProgram(): void {
+        this.onProgramChange(this.programList[0].id);
     }
 
     resetProgram(): void {
