@@ -1,10 +1,10 @@
 import { TapeEntry } from './tape-entry';
 
-export class TapeData implements TapeEntry{
+export class TapeData implements TapeEntry {
     constructor(private value: number) {
     }
 
-    valueOf(): number {
+    toNumber(): number {
         return this.value;
     }
 }

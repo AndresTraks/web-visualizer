@@ -6,4 +6,8 @@ export class Block implements TapeEntry {
     constructor(blockNumber: number) {
         this.blockNumber = blockNumber;
     }
+
+    toNumber(): number {
+        return null;
+    }
 }

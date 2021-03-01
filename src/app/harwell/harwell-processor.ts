@@ -107,7 +107,7 @@ export class HarwellProcessor {
     }
 
     add(addressA: string, addressB: string): void {
-        const addend: number = this.load(addressA);
+        const addend: TapeEntry = this.load(addressA);
         if (addressB === "01") {
             this.print(addend);
             return;
@@ -121,7 +121,7 @@ export class HarwellProcessor {
     }
 
     subtract(addressA: string, addressB: string): void {
-        const subtrahend: number = this.load(addressA);
+        const subtrahend: TapeEntry = this.load(addressA);
         if (addressB === "01") {
             this.print(subtrahend);
             return;
@@ -143,11 +143,11 @@ export class HarwellProcessor {
     }
 
     testPositive(address: string) {
-        this.state.yes = this.load(address) > 0;
+        this.state.yes = this.load(address).toNumber() > 0;
     }
 
     testNegative(address: string) {
-        this.state.yes = this.load(address) < 0;
+        this.state.yes = this.load(address).toNumber() < 0;
     }
 
     searchBlock(blockNumber: number, tapeNumber: number): void {
@@ -170,7 +170,8 @@ export class HarwellProcessor {
         this.state.printLayout = 2;
     }
 
-    print(value: number): void {
+    print(entry: TapeEntry): void {
+        const value: number = entry.toNumber();
         const sign: string = value < 0 ? '-' : '+';
         const valueString: string = sign + value.toFixed(7);
         if (this.state.printLayout === 1) {
@@ -181,35 +182,35 @@ export class HarwellProcessor {
         }
     }
 
-    peek(address: string): number {
+    peek(address: string): TapeEntry {
         if (address[0] === '0') {
             const specialInput: number = Number(address[1]);
             if (specialInput > 0 && specialInput <= 7) {
-                return this.tapes[specialInput].peekData().valueOf();
+                return this.tapes[specialInput].peekData();
             }
         }
         return this.state.get(address);
     }
 
-    peekDataAfterInstruction(address: string): number {
+    peekDataAfterInstruction(address: string): TapeEntry {
         // Used on disassembly when the next instruction has not yet been read,
         // but data following the instruction is an input operand.
         if (address[0] === '0') {
             const specialInput: number = Number(address[1]);
             if (specialInput > 0 && specialInput <= 7) {
                 if (this.state.tapeNumber === specialInput) {
-                    return this.tapes[specialInput].peekDataAfterInstruction().valueOf();
+                    return this.tapes[specialInput].peekDataAfterInstruction();
                 }
             }
         }
         return this.peek(address);
     }
 
-    load(address: string): number {
+    load(address: string): TapeEntry {
         if (address[0] === '0') {
             const specialInput: number = Number(address[1]);
             if (specialInput > 0 && specialInput <= 7) {
-                return this.tapes[specialInput].readData().valueOf();
+                return this.tapes[specialInput].readData();
             }
         }
         return this.state.get(address);

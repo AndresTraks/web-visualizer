@@ -86,10 +86,10 @@ export class MemoryBank extends SceneNode {
             if (index === 1) {
                 index--;
             }
-            if (register.value < 0) {
+            if (register.value.toNumber() < 0) {
                 index++;
             }
-            const digit = Number(register.value.toFixed(7)[index]);
+            const digit = Number(register.value.toNumber().toFixed(7)[index]);
             value = digit * (2 * Math.PI / 10);
         }
         indicator.worldTransform = Matrix4.rotationX(Math.PI / 2)

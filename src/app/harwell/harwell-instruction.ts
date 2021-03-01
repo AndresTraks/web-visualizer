@@ -1,10 +1,7 @@
 import { TapeEntry } from './tape/tape-entry';
 
 export class HarwellInstruction implements TapeEntry {
-    code: string;
-
-    private constructor(code: string) {
-        this.code = code;
+    private constructor(public code: string) {
     }
 
     static fromCode(code: string): HarwellInstruction {
@@ -22,5 +19,9 @@ export class HarwellInstruction implements TapeEntry {
 
     get addressB(): string {
         return this.code.substr(3, 2);
+    }
+
+    toNumber(): number {
+        return Number(this.code);
     }
 }
