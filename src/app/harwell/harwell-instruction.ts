@@ -1,27 +1,17 @@
-import { TapeEntry } from './tape/tape-entry';
-
-export class HarwellInstruction implements TapeEntry {
-    private constructor(public code: string) {
+export class HarwellInstruction {
+    static getOperation(entry: number): number {
+        return Math.floor(entry);
     }
 
-    static fromCode(code: string): HarwellInstruction {
-        const instruction = new HarwellInstruction(code);
-        return instruction;
+    static getAddressA(entry: number): number {
+        return Math.floor(HarwellInstruction.getOrderCode(entry) / 100) % 100;
     }
 
-    get operation(): string {
-        return this.code[0];
+    static getAddressB(entry: number): number {
+        return HarwellInstruction.getOrderCode(entry) % 100;
     }
 
-    get addressA(): string {
-        return this.code.substr(1, 2);
-    }
-
-    get addressB(): string {
-        return this.code.substr(3, 2);
-    }
-
-    toNumber(): number {
-        return Number(this.code);
+    private static getOrderCode(value: number): number {
+        return Math.round(value * 100000) / 10;
     }
 }

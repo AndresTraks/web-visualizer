@@ -1,66 +1,43 @@
-import { HarwellInstruction } from '../harwell-instruction';
-import { TapeEntry } from './tape-entry';
-import { TapeData } from './tape-data';
-import { Block } from './block';
-
 export class Tape {
     index: number = 0;
     blockNumber: number;
 
-    constructor(private entries: TapeEntry[]) {
+    constructor(private entries: number[], private blockEntryIndices: Map<number, number>) {
     }
 
     searchBlock(blockNumber: number): void {
-        const startIndex: number = this.index;
-        while (true) {
-            const entry: TapeEntry = this.readEntry();
-            if (entry instanceof Block) {
-                if (entry.blockNumber === blockNumber) {
-                    return;
-                }
-            }
-            if (this.index === startIndex) {
-                throw new Error("Block not found on tape after full loop");
-            }
+        if (this.blockEntryIndices.has(blockNumber)) {
+            this.index = this.blockEntryIndices.get(blockNumber);
+            this.blockNumber = blockNumber;
+        } else {
+            throw new Error("Block not found on tape after full loop");
         }
     }
 
-    readInstruction(): HarwellInstruction {
-        return this.readEntry() as HarwellInstruction;
-    }
-
-    readData(): TapeData {
-        return this.readEntry() as TapeData;
-    }
-
-    peekData(): TapeData {
-        return this.peekEntry() as TapeData;
-    }
-
-    peekDataAfterInstruction(): TapeData {
-        return this.peekEntryAt(this.index + 1) as TapeData;
-    }
-
-    readEntry(): TapeEntry {
-        const entry: TapeEntry = this.peekEntry();
+    read(): number {
+        const entry: number = this.peek();
         this.index++;
         if (this.index >= this.entries.length) {
             this.index = 0;
         }
-        if (entry instanceof Block) {
-            this.blockNumber = entry.blockNumber;
-        }
         return entry;
     }
 
-    peekEntry(): TapeEntry {
+    peek(): number {
         if (this.entries.length === 0) {
             throw new Error("No entry on tape to read.");
         }
         return this.entries[this.index];
     }
 
-    peekEntryAt(index: number): TapeEntry {
+    peekAhead(): number {
+        if (this.index === this.entries.length - 1) {
+            return this.peekAt(0);
+        }
+        return this.peekAt(this.index + 1);
+    }
+
+    peekAt(index: number): number {
         if (this.entries.length === 0) {
             throw new Error("No entry on tape to read.");
         }

@@ -8,7 +8,6 @@ import { HarwellProcessor } from './harwell-processor';
 import { MemoryBank } from './memory-bank';
 import { TubeFactory } from './tube-mesh-factory';
 import { MemoryRegister } from './memory-register';
-import { TapeEntry } from './tape/tape-entry';
 import { Disassembler } from './disassembler';
 import { ExamplePrograms } from './example-programs';
 import { ProgramDescription } from './program-description';
@@ -121,14 +120,18 @@ export class HarwellScene extends Scene {
             const bank: MemoryBank = this.memoryBanks[b];
             for (let r = 0; r < 10; r++) {
                 const register: MemoryRegister = bank.registers[r];
-                const address: string = String((b + 1) * 10 + r);
-                register.value = this.processor.peek(address);
+                register.value = this.processor.peek((b + 1) * 10 + r);
             }
         }
     }
 
     private disassembleNextInstruction(): void {
-        const nextEntry: TapeEntry = this.processor.currentTape.peekEntry();
+        var nextEntry: number;
+        if (this.processor.state.tapeNumber > 7) {
+            nextEntry = this.processor.state.get(this.processor.state.tapeNumber);
+        } else {
+            nextEntry = this.processor.currentTape.peek();
+        }
         this.nextInstructionText = this.processor.state.finished
             ? "(finished)"
             : this.disassembler.disassemble(nextEntry);

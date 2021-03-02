@@ -1,169 +1,165 @@
 import { HarwellInstruction } from "./harwell-instruction";
 import { HarwellProcessor } from "./harwell-processor";
-import { Block } from "./tape/block";
-import { TapeEntry } from "./tape/tape-entry";
 
 export class Disassembler {
     constructor(private processor: HarwellProcessor) {
     }
 
-    disassemble(entry: TapeEntry): string {
-        if (entry instanceof HarwellInstruction) {
-            return entry.code + " " + this.disassembleInstruction(entry);
-        }
-        
-        if (entry instanceof Block) {
-            return "Block ID " + entry.blockNumber.toString();
-        }
-
-        throw Error("Cannot disassemble tape entry.");
+    disassemble(entry: number): string {
+        const entryText: string = String(Math.round(entry * 10000)).padStart(5, '0')
+        return entryText + ' ' + this.disassembleInstruction(entry);
     }
 
-    private disassembleInstruction(instruction: HarwellInstruction): string {
-        const operation: string = instruction.operation;
+    private disassembleInstruction(instruction: number): string {
+        const operation: number = HarwellInstruction.getOperation(instruction);
         switch (operation) {
-            case '0':
+            case 0:
                 return this.disassembleControl(instruction);
-            case '1':
+            case 1:
                 return this.disassembleAdd(instruction);
-            case '2':
+            case 2:
                 return this.disassembleAddAndClear(instruction);
-            case '3':
+            case 3:
                 return this.disassembleSubtract(instruction);
-            case '4':
+            case 4:
                 return this.disassembleSubtractAndClear(instruction);
-            case '5':
+            case 5:
                 return this.disassembleMultiply(instruction);
-            case '6':
+            case 6:
                 return this.disassembleDivide(instruction);
             default:
-                throw new Error("Unknown instruction " + instruction.code);
+                throw new Error("Unknown operation " + instruction);
         }
     }
 
-    private disassembleControl(instruction: HarwellInstruction): string {
-        if (instruction.addressA[0] === '3') {
-            const blockNumber: number = Number(instruction.addressA[1]);
-            const tapeNumber: number = Number(instruction.addressB);
-            return "SEARCH for block " + blockNumber + " on tape " + tapeNumber;
+    private disassembleControl(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        if (addressA >= 30 && addressA <= 39) {
+            const blockNumber: number = addressA % 10;
+            return "SEARCH for block " + blockNumber + " on tape " + addressB;
         }
-        if (instruction.addressA[0] === '5') {
-            const blockNumber: number = Number(instruction.addressA[1]);
-            const tapeNumber: number = Number(instruction.addressB);
-            return "CONDITIONAL SEARCH for block " + blockNumber + " on tape " + tapeNumber
+        if (addressA >= 50 && addressA <= 59) {
+            const blockNumber: number = addressA % 10;
+            return "CONDITIONAL SEARCH for block " + blockNumber + " on tape " + addressB
                 + " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
         }
-        switch (instruction.addressA) {
-            case "01":
-                if (instruction.addressB === "00") {
+        switch (addressA) {
+            case 1:
+                if (addressB === 0) {
                     return "FINISH";
                 }
-            case "11":
-                return "TEST POSITIVE [" + instruction.addressB + "]"
-                    + " (" + this.processor.peek(instruction.addressB).toNumber() + ")";
-            case "12":
-                return "TEST NEGATIVE [" + instruction.addressB + "]"
-                    + " (" + this.processor.peek(instruction.addressB).toNumber() + ")";
-            case "21":
-                return "TRANSFER to tape " + instruction.addressB;
-            case "22":
-                return "CONDITIONAL TRANSFER to tape " + instruction.addressB + 
+            case 11:
+                return "TEST POSITIVE [" + addressB + "]"
+                    + " (" + this.processor.peek(addressB) + ")";
+            case 12:
+                return "TEST NEGATIVE [" + addressB + "]"
+                    + " (" + this.processor.peek(addressB) + ")";
+            case 21:
+                return "TRANSFER to " + addressB;
+            case 22:
+                return "CONDITIONAL TRANSFER to " + addressB + 
                     " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
-            case "73":
+            case 73:
                 return "PRINT LAYOUT REFERENCE 1";
-            case "74":
+            case 74:
                 return "PRINT LAYOUT REFERENCE 2";
             default:
-                throw new Error("Unknown control instruction " + instruction.code);
+                throw new Error("Unknown control instruction " + instruction);
         }
     }
 
-    private disassembleAdd(instruction: HarwellInstruction): string {
-        const addend: TapeEntry = this.processor.peekDataAfterInstruction(instruction.addressA);
-        if (instruction.addressB === "01") {
-            return "PRINT [" + instruction.addressA + "] (" + addend.toNumber() + ")";
+    private disassembleAdd(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const addend: number = this.processor.peekAhead(addressA);
+        if (addressB === 1) {
+            return "PRINT [" + addressA + "] (" + addend + ")";
         }
-        const current: TapeEntry = this.processor.peek(instruction.addressB);
+        const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
         const addendText: string = this.format(addend);
-        if (addend as HarwellInstruction && current.toNumber() == 0) {
-            return "[" + instruction.addressB + "] = " + addend.toNumber();
-        }
-        const result: string = this.formatNumber(current.toNumber() + addend.toNumber());
-        return "[" + instruction.addressB + "] += [" + instruction.addressA + "]"
+        const result: string = this.format(current + addend);
+        return "[" + addressB + "] += [" + addressA + "]"
             + " (" + currentText + " + " + addendText + " = " + result + ")";
     }
 
-    private disassembleAddAndClear(instruction: HarwellInstruction): string {
-        const addend: TapeEntry = this.processor.peekDataAfterInstruction(instruction.addressA);
-        if (instruction.addressB === "00") {
-            return "CLEAR [" + instruction.addressA + "] (" + addend.toNumber() + ")";
+    private disassembleAddAndClear(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const addend: number = this.processor.peekAhead(addressA);
+        if (addressB === 0) {
+            return "CLEAR [" + addressA + "] (" + addend + ")";
         }
-        if (instruction.addressB === "01") {
-            return "PRINT [" + instruction.addressA + "] (" + addend.toNumber() + ")";
+        if (addressB === 1) {
+            return "PRINT [" + addressA + "] (" + addend + ")";
         }
-        const current: TapeEntry = this.processor.peek(instruction.addressB);
+        const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
         const addendText: string = this.format(addend);
-        const result: string = this.formatNumber(current.toNumber() + addend.toNumber());
-        return "[" + instruction.addressB + "] += [" + instruction.addressA + "]; CLEAR [" + instruction.addressA + "]"
+        const result: string = this.format(current + addend);
+        return "[" + addressB + "] += [" + addressA + "]; CLEAR [" + addressA + "]"
             + " (" + currentText + " + " + addendText + " = " + result + ")";
     }
 
-    private disassembleSubtract(instruction: HarwellInstruction): string {
-        const subtrahend: TapeEntry = this.processor.peekDataAfterInstruction(instruction.addressA);
-        if (instruction.addressB === "00") {
-            return "CLEAR [" + instruction.addressA + "] (" + subtrahend.toNumber() + ")";
+    private disassembleSubtract(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const subtrahend: number = this.processor.peekAhead(addressA);
+        if (addressB === 0) {
+            return "CLEAR [" + addressA + "] (" + subtrahend + ")";
         }
-        if (instruction.addressB === "01") {
-            return "PRINT [" + instruction.addressA + "] (" + subtrahend.toNumber() + ")";
+        if (addressB === 1) {
+            return "PRINT [" + addressA + "] (" + subtrahend + ")";
         }
-        const current: TapeEntry = this.processor.peek(instruction.addressB);
+        const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
         const subtrahendText: string = this.format(subtrahend);
-        const result: string = this.formatNumber(current.toNumber() - subtrahend.toNumber());
-        return "[" + instruction.addressB + "] -= "
-            + "[" + instruction.addressA + "]; CLEAR [" + instruction.addressA + "] (" + currentText + " - " + subtrahendText + " = " + result + ")";
+        const result: string = this.format(current - subtrahend);
+        return "[" + addressB + "] -= "
+            + "[" + addressA + "]; CLEAR [" + addressA + "] (" + currentText + " - " + subtrahendText + " = " + result + ")";
     }
 
-    private disassembleSubtractAndClear(instruction: HarwellInstruction): string {
-        const subtrahend: TapeEntry = this.processor.peekDataAfterInstruction(instruction.addressA);
-        const current: TapeEntry = this.processor.peek(instruction.addressB);
+    private disassembleSubtractAndClear(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const subtrahend: number = this.processor.peekAhead(addressA);
+        const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
         const subtrahendText: string = this.format(subtrahend);
-        const result: string = this.formatNumber(current.toNumber() - subtrahend.toNumber());
-        return "[" + instruction.addressB + "] -= "
-            + "[" + instruction.addressA + "] (" + currentText + " - " + subtrahendText + " = " + result + ")";
+        const result: string = this.format(current - subtrahend);
+        return "[" + addressB + "] -= "
+            + "[" + addressA + "] (" + currentText + " - " + subtrahendText + " = " + result + ")";
     }
 
-    private disassembleMultiply(instruction: HarwellInstruction): string {
-        const multiplicand: TapeEntry = this.processor.peek(instruction.addressA);
-        const multiplier: TapeEntry = this.processor.peek(instruction.addressB);
+    private disassembleMultiply(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const multiplicand: number = this.processor.peek(addressA);
+        const multiplier: number = this.processor.peek(addressB);
         const multiplicandText: string = this.format(multiplier);
         const multiplierText: string = this.format(multiplier);
-        const result: string = this.formatNumber(multiplicand.toNumber() * multiplier.toNumber());
-        return "[09] = " + "[" + instruction.addressA + "] * [" + instruction.addressB + "]"
+        const result: string = this.format(multiplicand * multiplier);
+        return "[09] = " + "[" + addressA + "] * [" + addressB + "]"
             + " (" + multiplicandText + " * " + multiplierText + " = " + result + ")";
     }
 
-    private disassembleDivide(instruction: HarwellInstruction): string {
-        const dividend: TapeEntry = this.processor.peek("09");
-        const divisor: TapeEntry = this.processor.peek(instruction.addressA);
+    private disassembleDivide(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        const dividend: number = this.processor.peek(9);
+        const divisor: number = this.processor.peek(addressA);
         const dividendText: string = this.format(dividend);
         const divisorText: string = this.format(divisor);
-        const quotient: string = this.formatNumber(dividend.toNumber() / divisor.toNumber());
-        const remainder: string = this.formatNumber(dividend.toNumber() % divisor.toNumber());
-        return "[" + instruction.addressB + "] = " + "[09] / [" + instruction.addressA + "]"
+        const quotient: string = this.format(dividend / divisor);
+        const remainder: string = this.format(dividend % divisor);
+        return "[" + addressB + "] = " + "[09] / [" + addressA + "]"
             + " (" + dividendText + " / " + divisorText + " = " + quotient + "); "
-            + "[09] = " + "[09] % [" + instruction.addressA + "]"
+            + "[09] = " + "[09] % [" + addressA + "]"
             + " (" + dividendText + " % " + divisorText + " = " + remainder + ")";
     }
 
-    private format(result: TapeEntry): string {
-        return this.formatNumber(result.toNumber());
-    }
-
-    private formatNumber(result: number): string {
+    private format(result: number): string {
         return Number(result.toFixed(7)).toString();
     }
 }
