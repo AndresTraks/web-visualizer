@@ -3,6 +3,12 @@ export class Tape {
     blockNumber: number;
 
     constructor(private entries: number[], private blockEntryIndices: Map<number, number>) {
+        for (const [block, index] of blockEntryIndices) {
+            if (index === this.index) {
+                this.blockNumber = block;
+                break;
+            }
+        }
     }
 
     searchBlock(blockNumber: number): void {

@@ -118,7 +118,7 @@ export class HarwellProcessor {
 
     add(addressA: number, addressB: number): void {
         const addend: number = this.read(addressA);
-        if (addressB == 1) {
+        if (addressB === 1) {
             this.print(addend);
             return;
         }
