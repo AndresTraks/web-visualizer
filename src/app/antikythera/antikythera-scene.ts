@@ -77,6 +77,8 @@ export class AntikytheraScene extends Scene {
         super(renderingContext);
         const gl = renderingContext.gl;
 
+        this.camera.orthoScaling = 1.4;
+
         const alpha = 0.95;
 
         this.solarNodes = new SceneNode(renderingContext);

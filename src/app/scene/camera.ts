@@ -5,6 +5,7 @@ export class Camera {
     eye: Vector3;
     target: Vector3;
     up: Vector3 = new Vector3(0, 1, 0);
+    orthoScaling: number = 1;
 
     private fov: number = Math.PI / 4;
     private aspectRatio: number = 1;
@@ -53,7 +54,7 @@ export class Camera {
 
     private calculateProjection(): void {
         if (this.isOrthographic) {
-            this.projection = Matrix4.orthographicProjection(this.aspectRatio, 1, this.nearPlane, this.farPlane);
+            this.projection = Matrix4.orthographicProjection(this.aspectRatio * this.orthoScaling, this.orthoScaling, this.nearPlane, this.farPlane);
         } else {
             this.projection = Matrix4.perspectiveProjection(this.fov, this.aspectRatio, this.nearPlane, this.farPlane);
         }

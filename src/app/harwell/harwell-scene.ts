@@ -53,6 +53,7 @@ export class HarwellScene extends Scene {
         this.camera.eye = new Vector3(0, 0.5, 3.3);
         this.camera.target = new Vector3(0, 0.25, 0);
         this.clearColor = [0.1, 0.1, 0.1, 1];
+        this.camera.orthoScaling = 2.7;
     }
 
     private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
