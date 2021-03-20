@@ -5,9 +5,11 @@ export class MemoryRegister {
     private currentValue: number;
     private isActive: boolean = false;
     indicators: Indicator[];
+    private hasSignDigit: boolean;
 
     constructor(indicators: Indicator[]) {
         this.indicators = indicators;
+        this.hasSignDigit = indicators.length === 9;
     }
 
     set value(value: number | null) {
@@ -22,40 +24,31 @@ export class MemoryRegister {
         }
         this.currentValue = value;
 
-        this.indicators[0].digit = value >= 0 ? 0 : 1;
-        for (let i = 1; i < 9; i++) {
-            let index = i;
-            if (index === 1) {
-                index--;
+        if (this.hasSignDigit) {
+            this.indicators[0].digit = this.getSignDigit();
+            for (let i = 0; i < 8; i++) {
+                this.indicators[i + 1].digit = this.getDigit(i);
             }
-            if (value < 0) {
-                index++;
+        } else {
+            for (let i = 0; i < 8; i++) {
+                this.indicators[i].digit = this.getDigit(i);
             }
-            const digit = Number(value.toFixed(7)[index]);
-            this.indicators[i].digit = digit;
         }
     }
 
-    setIndicatorPositions(origin: Vector3, tubeDistance: number, registerMiddleGap: number): void {
-        const position: Vector3 = origin.copy();
-        for (let i = 0; i < 5; i++) {
-            const indicator: Indicator = this.indicators[i];
-            indicator.position = position.copy();
-            position.x += tubeDistance;
-        }
-        position.x += registerMiddleGap;
-        for (let i = 5; i < 9; i++) {
-            const indicator: Indicator = this.indicators[i];
-            indicator.position = position.copy();
-            position.x += tubeDistance;
-        }
+    private getSignDigit(): number {
+        return this.currentValue >= 0 ? 0 : 1;
+    }
+
+    private getDigit(index: number): number {
+        return Math.floor(Math.abs(this.currentValue) * (10**index)) % 10;
     }
 
     private setActive(isActive: boolean) {
         if (this.isActive !== isActive) {
             this.isActive = isActive;
-            for (let i = 0; i < 9; i++) {
-                this.indicators[i].color = isActive ? Indicator.activeColor : Indicator.passiveColor;
+            for (const indicator of this.indicators) {
+                indicator.color = isActive ? Indicator.activeColor : Indicator.passiveColor;
             }
         }
     }

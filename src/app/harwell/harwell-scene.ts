@@ -11,12 +11,15 @@ import { MemoryRegister } from './memory-register';
 import { Disassembler } from './disassembler';
 import { ExamplePrograms } from './example-programs';
 import { ProgramDescription } from './program-description';
+import { Accumulator } from './accumulator';
 
 export class HarwellScene extends Scene {
     processor: HarwellProcessor;
     disassembler: Disassembler;
 
     memoryBanks: MemoryBank[];
+    accumulator8: Accumulator;
+    accumulator9: Accumulator;
     nodes: SceneNode[];
 
     isSingleStepping: boolean = true;
@@ -33,6 +36,7 @@ export class HarwellScene extends Scene {
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
         const indicatorMesh = new Mesh(ShapeFactory.createBox(new Vector3(0.0025, 0.003, 0.0036)), renderingContext.gl);
+        const accumulatorMesh = new Mesh(TubeFactory.createAccumulator(), renderingContext.gl);
 
         const memoryUnit1 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, -0.5, 0));
         const memoryUnit2 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, 0, 0));
@@ -44,8 +48,11 @@ export class HarwellScene extends Scene {
         const memoryUnit8 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1, 1, 0));
         const memoryUnit9 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1.5, 1, 0));
 
+        this.accumulator8 = this.createAccumulatorNode(memoryUnitMesh, accumulatorMesh, indicatorMesh, new Vector3(0, -0.35, 0));
+        this.accumulator9 = this.createAccumulatorNode(memoryUnitMesh, accumulatorMesh, indicatorMesh, new Vector3(0, 0.5, 0));
+
         this.memoryBanks = [memoryUnit1, memoryUnit2, memoryUnit3, memoryUnit4, memoryUnit5, memoryUnit6, memoryUnit7, memoryUnit8, memoryUnit9];
-        this.nodes = this.memoryBanks;
+        this.nodes = [...this.memoryBanks, this.accumulator8, this.accumulator9];
 
         this.light.position = new Vector3(0.5, 2, 0.5);
         this.camera.eye = new Vector3(0, 0.5, 3.3);
@@ -58,6 +65,10 @@ export class HarwellScene extends Scene {
 
     private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
         return new MemoryBank(memoryUnitMesh, tubeMesh, indicatorMesh, position, this.renderingContext);
+    }
+
+    private createAccumulatorNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): Accumulator {
+        return new Accumulator(memoryUnitMesh, tubeMesh, indicatorMesh, position, this.renderingContext);
     }
 
     onProgramChange(selected: string): void {
@@ -118,6 +129,8 @@ export class HarwellScene extends Scene {
     }
 
     private copyStateToRenderObject(): void {
+        this.accumulator8.register.value = this.processor.peek(8);
+        this.accumulator9.register.value = this.processor.peek(9);
         for (let b = 0; b < 9; b++) {
             const bank: MemoryBank = this.memoryBanks[b];
             for (let r = 0; r < 10; r++) {

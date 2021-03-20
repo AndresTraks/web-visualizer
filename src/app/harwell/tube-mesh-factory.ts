@@ -3,6 +3,9 @@ import { Vector3 } from '../graphics/vector3';
 
 export class TubeFactory extends ShapeFactory {
     static readonly tubeDistance: number = 0.0425;
+    static readonly tubeRadius: number = 0.015;
+    static readonly tubeHeight: number = 0.05;
+    static readonly memoryRegisterMiddleGap: number = 0.1;
 
     static createTube(radius: number, height: number): Vector3[] {
         const numSegments = 10;
@@ -32,21 +35,29 @@ export class TubeFactory extends ShapeFactory {
 
     static createTubeRow(z: number): Vector3[] {
         const tubes: Vector3[] = [];
-        const tube = this.createTube(0.015, 0.05);
+        const tube = this.createTube(this.tubeRadius, this.tubeHeight);
 
-        const offset = new Vector3(-0.23, 0, z);
+        let offset = new Vector3(-0.23, 0, z);
         for (let i = 0; i < 5; i++) {
-            tube.forEach(vertex => {
-                tubes.push(vertex.add(offset));
-            });
-            offset.x += 0.0425;
+            this.appendWithOffset(tubes, tube, offset);
+            offset.x += this.tubeDistance;
         }
-        offset.x += 0.1;
+        offset.x += this.memoryRegisterMiddleGap;
         for (let i = 0; i < 4; i++) {
-            tube.forEach(vertex => {
-                tubes.push(vertex.add(offset));
-            });
-            offset.x += 0.0425;
+            this.appendWithOffset(tubes, tube, offset);
+            offset.x += this.tubeDistance;
+        }
+        return tubes;
+    }
+
+    static createAccumulatorTubeRow(): Vector3[] {
+        const tubes: Vector3[] = [];
+        const tube = this.createTube(this.tubeRadius, this.tubeHeight);
+
+        const offset = new Vector3(-0.15, 0, 0.1);
+        for (let i = 0; i < 8; i++) {
+            this.appendWithOffset(tubes, tube, offset);
+            offset.x += this.tubeDistance;
         }
         return tubes;
     }
@@ -55,16 +66,16 @@ export class TubeFactory extends ShapeFactory {
         const rows: Vector3[] = [];
         for (let i = 0; i < 5; i++) {
             const row = this.createTubeRow(-0.22 + i * this.tubeDistance);
-            row.forEach(vertex => {
-                rows.push(vertex);
-            });
+            this.append(rows, row);
         }
         for (let i = 5; i < 10; i++) {
             const row = this.createTubeRow(-0.165 + i * this.tubeDistance);
-            row.forEach(vertex => {
-                rows.push(vertex);
-            });
+            this.append(rows, row);
         }
         return rows;
+    }
+
+    static createAccumulator(): Vector3[] {
+        return this.createAccumulatorTubeRow();
     }
 }

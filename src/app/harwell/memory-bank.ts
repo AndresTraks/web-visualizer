@@ -32,14 +32,13 @@ export class MemoryBank extends SceneNode {
         this.createRegisters(indicatorMesh, renderingContext);
     }
 
-    private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext) {
+    private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext): void {
         this.registers = [];
         let registerPosition = this.position.add(new Vector3(-0.23, 0.22, 0));
-        const registerMiddleGap: number = 0.1;
         for (let r = 0; r < 5; r++) {
             const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
             const register: MemoryRegister = new MemoryRegister(indicators);
-            register.setIndicatorPositions(registerPosition, TubeFactory.tubeDistance, registerMiddleGap);
+            this.setIndicatorPositions(register, registerPosition);
             this.registers[r] = register;
             registerPosition = registerPosition.add(new Vector3(0, -TubeFactory.tubeDistance, 0));
         }
@@ -47,18 +46,33 @@ export class MemoryBank extends SceneNode {
         for (let r = 5; r < 10; r++) {
             const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
             const register: MemoryRegister = new MemoryRegister(indicators);
-            register.setIndicatorPositions(registerPosition, TubeFactory.tubeDistance, registerMiddleGap);
+            this.setIndicatorPositions(register, registerPosition);
             this.registers[r] = register;
             registerPosition = registerPosition.add(new Vector3(0, -TubeFactory.tubeDistance, 0));
         }
     }
 
-    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext) {
+    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext): Indicator[] {
         const indicators: Indicator[] = [];
         for (let i = 0; i < 9; i++) {
             indicators[i] = new Indicator(indicatorMesh, renderingContext);
         }
         return indicators;
+    }
+
+    private setIndicatorPositions(register: MemoryRegister, origin: Vector3): void {
+        const position: Vector3 = origin.copy();
+        for (let i = 0; i < 5; i++) {
+            const indicator: Indicator = register.indicators[i];
+            indicator.position = position.copy();
+            position.x += TubeFactory.tubeDistance;
+        }
+        position.x += TubeFactory.memoryRegisterMiddleGap;
+        for (let i = 5; i < 9; i++) {
+            const indicator: Indicator = register.indicators[i];
+            indicator.position = position.copy();
+            position.x += TubeFactory.tubeDistance;
+        }
     }
 
     draw(): void {

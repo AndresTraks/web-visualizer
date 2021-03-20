@@ -151,4 +151,16 @@ export class ShapeFactory {
             u.x * v.y - u.y * v.x);
         return normal.normalized;
     }
+
+    static append(to: Vector3[], from: Vector3[]): void {
+        from.forEach(vertex => {
+            to.push(vertex);
+        });
+    }
+
+    static appendWithOffset(to: Vector3[], from: Vector3[], offset: Vector3): void {
+        from.forEach(vertex => {
+            to.push(vertex.add(offset));
+        });
+    }
 }
