@@ -13,6 +13,21 @@ export class Vector3 {
         return new Vector3(0, 0, 0);
     }
 
+    static getBoundingPoints(vectors: Vector3[]): Vector3[] {
+        let minPoint: Vector3 = vectors[0];
+        let maxPoint: Vector3 = vectors[0];
+        for (let i: number = 1; i < vectors.length; i++) {
+            const v: Vector3 = vectors[i];
+            minPoint.x = Math.min(minPoint.x, v.x);
+            minPoint.y = Math.min(minPoint.y, v.y);
+            minPoint.z = Math.min(minPoint.z, v.z);
+            maxPoint.x = Math.max(maxPoint.x, v.x);
+            maxPoint.y = Math.max(maxPoint.y, v.y);
+            maxPoint.z = Math.max(maxPoint.z, v.z);
+        }
+        return [minPoint, maxPoint];
+    }
+
     get el(): number[] {
         return [this.x, this.y, this.z];
     }
@@ -31,6 +46,10 @@ export class Vector3 {
             this.x * scale,
             this.y * scale,
             this.z * scale);
+    }
+
+    copy(): Vector3 {
+        return new Vector3(this.x, this.y, this.z);
     }
 
     add(other: Vector3): Vector3 {
