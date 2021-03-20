@@ -30,8 +30,6 @@ export class HarwellScene extends Scene {
         this.processor = new HarwellProcessor();
         this.disassembler = new Disassembler(this.processor);
 
-        this.loadFirstProgram();
-
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
         const indicatorMesh = new Mesh(ShapeFactory.createBox(new Vector3(0.0025, 0.003, 0.0036)), renderingContext.gl);
@@ -54,6 +52,8 @@ export class HarwellScene extends Scene {
         this.camera.target = new Vector3(0, 0.25, 0);
         this.clearColor = [0.1, 0.1, 0.1, 1];
         this.camera.orthoScaling = 2.7;
+
+        this.loadFirstProgram();
     }
 
     private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
@@ -76,6 +76,7 @@ export class HarwellScene extends Scene {
         this.isSingleStepDone = true;
         this.processor.state.finished = false;
         this.processor.state.tapeNumber = 1;
+        this.setIndicatorsPassive();
         this.disassembleNextInstruction();
     }
 
@@ -122,6 +123,18 @@ export class HarwellScene extends Scene {
             for (let r = 0; r < 10; r++) {
                 const register: MemoryRegister = bank.registers[r];
                 register.value = this.processor.peek((b + 1) * 10 + r);
+            }
+        }
+    }
+
+    private setIndicatorsPassive(): void {
+        for (let b = 0; b < 9; b++) {
+            const bank: MemoryBank = this.memoryBanks[b];
+            for (let r = 0; r < 10; r++) {
+                const register: MemoryRegister = bank.registers[r];
+                if (register.value === 0 || register.value === undefined) {
+                    register.value = null;
+                }
             }
         }
     }

@@ -5,12 +5,15 @@ import { Vector3 } from "../graphics/vector3";
 import { SceneNode } from "../scene/scene-node";
 
 export class Indicator extends SceneNode {
+    static readonly activeColor: number[] = [1, 0.2, 0.2, 1];
+    static readonly passiveColor: number[] = [0.6, 0.12, 0.12, 1];
+
     private currentDigit: number;
 
     constructor(mesh: Mesh, protected renderingContext: AppRenderingContext) {
         super(renderingContext);
         this.meshes = [mesh];
-        this.color = [1, 0.2, 0.2, 1];
+        this.color = Indicator.passiveColor;
         this.program = renderingContext.emitterShader;
         this.position = Vector3.zero;
     }

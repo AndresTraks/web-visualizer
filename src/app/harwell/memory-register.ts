@@ -2,27 +2,27 @@ import { Vector3 } from '../graphics/vector3';
 import { Indicator } from './indicator';
 
 export class MemoryRegister {
-    private static readonly activeIndicatorColor: number[] = [1, 0.2, 0.2, 1];
-    private static readonly passiveIndicatorColor: number[] = [0.6, 0.12, 0.12, 1];
     private currentValue: number;
+    private isActive: boolean = false;
     indicators: Indicator[];
 
     constructor(indicators: Indicator[]) {
         this.indicators = indicators;
     }
 
-    set value(value: number) {
+    set value(value: number | null) {
         if (this.currentValue === value) {
             return;
         }
+        if (value == null) {
+            this.setActive(false);
+            value = 0;
+        } else {
+            this.setActive(true);
+        }
         this.currentValue = value;
 
-        const color: number[] = value !== 0
-            ? MemoryRegister.activeIndicatorColor
-            : MemoryRegister.passiveIndicatorColor;
-
         this.indicators[0].digit = value >= 0 ? 0 : 1;
-        this.indicators[0].color = color;
         for (let i = 1; i < 9; i++) {
             let index = i;
             if (index === 1) {
@@ -32,9 +32,7 @@ export class MemoryRegister {
                 index++;
             }
             const digit = Number(value.toFixed(7)[index]);
-            const indicator: Indicator = this.indicators[i];
-            indicator.digit = digit;
-            indicator.color = color;
+            this.indicators[i].digit = digit;
         }
     }
 
@@ -50,6 +48,15 @@ export class MemoryRegister {
             const indicator: Indicator = this.indicators[i];
             indicator.position = position.copy();
             position.x += tubeDistance;
+        }
+    }
+
+    private setActive(isActive: boolean) {
+        if (this.isActive !== isActive) {
+            this.isActive = isActive;
+            for (let i = 0; i < 9; i++) {
+                this.indicators[i].color = isActive ? Indicator.activeColor : Indicator.passiveColor;
+            }
         }
     }
 }
