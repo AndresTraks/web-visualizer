@@ -69,6 +69,9 @@ export class HarwellProcessor {
             case 6:
                 this.divide(addressA, addressB);
                 break;
+            case 7:
+                this.transferPositiveModulus(addressA, addressB);
+                break;
             default:
                 throw new Error("Unknown order " + HarwellInstruction.getOrderCode(instruction));
         }
@@ -147,19 +150,28 @@ export class HarwellProcessor {
         this.state.clear(addressA);
     }
 
-    multiply(addressA: number, addressB: number) {
+    multiply(addressA: number, addressB: number): void {
         this.state.multiply(addressA, addressB);
     }
 
-    divide(addressA: number, addressB: number) {
+    divide(addressA: number, addressB: number): void {
         this.state.divide(addressA, addressB);
     }
 
-    testPositive(address: number) {
+    transferPositiveModulus(addressA: number, addressB: number): void {
+        const value: number = this.peek(addressA);
+        if (value < 0) {
+            this.subtract(addressA, addressB);
+        } else {
+            this.add(addressA, addressB);
+        }
+    }
+
+    testPositive(address: number): void {
         this.state.yes = this.read(address) > 0;
     }
 
-    testNegative(address: number) {
+    testNegative(address: number): void {
         this.state.yes = this.read(address) < 0;
     }
 

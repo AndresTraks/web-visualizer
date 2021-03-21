@@ -18,7 +18,7 @@ export class HarwellState {
         return this.data[address];
     }
 
-    add(address: number, value: number) {
+    add(address: number, value: number): void {
         let sum: number = this.data[address] + value;
         if (this.shiftPosition !== 0) {
             sum *= 10**this.shiftPosition;
@@ -34,7 +34,7 @@ export class HarwellState {
         }
     }
 
-    subtract(address: number, value: number) {
+    subtract(address: number, value: number): void {
         let difference: number = this.data[address] - value;
         if (this.shiftPosition !== 0) {
             difference *= 10**this.shiftPosition;
@@ -50,7 +50,7 @@ export class HarwellState {
         }
     }
 
-    multiply(addressA: number, addressB: number) {
+    multiply(addressA: number, addressB: number): void {
         const product: number = this.get(addressA) * this.get(addressB);
         const leastSignificantDigits: number = Math.abs(product * 10) % 10000000;
         const mostSignificantDigits: number = Math.trunc(product / 10000000);
@@ -59,7 +59,7 @@ export class HarwellState {
         this.clear(addressB);
     }
 
-    divide(addressA: number, addressB: number) {
+    divide(addressA: number, addressB: number): void {
         const divisior: number = this.get(addressA) / 10000000;
         const quotient: number = Math.trunc(this.get(9) / divisior);
         const remainder: number = Math.trunc(this.get(9) % divisior);

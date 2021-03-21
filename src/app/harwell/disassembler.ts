@@ -171,8 +171,11 @@ export class Disassembler {
 
     private disassembleTransferPositiveModulus(instruction: number): string {
         const addressA: number = HarwellInstruction.getAddressA(instruction);
-        const addressB: number = HarwellInstruction.getAddressB(instruction);
-        throw new Error("TRANSFER POSITIVE MODULUS not supported");
+        const value: number = this.processor.peek(addressA);
+        if (value < 0) {
+            return "TRANSFER POSITIVE MODULUS: " + this.disassembleSubtract(instruction);
+        }
+        return "TRANSFER POSITIVE MODULUS: " + this.disassembleAdd(instruction);
     }
 
     private format(value: number): string {
