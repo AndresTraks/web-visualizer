@@ -32,6 +32,7 @@
                 </div>
                 <p class="mb-0">Tape {{scene.processor.state.tapeNumber}}, block {{scene.processor.currentBlockNumber}}</p>
                 <p style="min-height: 5em;">Order: {{scene.nextInstructionText}}</p>
+                <p *ngIf="scene.isInErrorState" class="text-danger">{{scene.errorText}}</p>
             </accordion-group>
             <accordion-group [isOpen]=true>
                 <button class="btn btn-link btn-block clearfix" accordion-heading type="button">

@@ -6,7 +6,7 @@ export class Disassembler {
     }
 
     disassemble(entry: number): string {
-        const entryText: string = String(Math.round(entry * 10000)).padStart(5, '0')
+        const entryText: string = (entry / 1000).toString().padStart(5, '0');
         return entryText + ' ' + this.disassembleInstruction(entry);
     }
 
@@ -27,8 +27,10 @@ export class Disassembler {
                 return this.disassembleMultiply(instruction);
             case 6:
                 return this.disassembleDivide(instruction);
+            case 7:
+                return this.disassembleTransferPositiveModulus(instruction);
             default:
-                throw new Error("Unknown operation " + instruction);
+                throw new Error("Unknown order " + HarwellInstruction.getOrderCode(instruction));
         }
     }
 
@@ -44,6 +46,11 @@ export class Disassembler {
             return "CONDITIONAL SEARCH for block " + blockNumber + " on tape " + addressB
                 + " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
         }
+        if (addressA >= 81 && addressA <= 89) {
+            const shiftPosition: number = -(addressA % 10) + 2;
+            const shiftPositionText: string = String.fromCharCode('A'.charCodeAt(0) - shiftPosition + 1);
+            return "SELECT SHIFT POSITION " + shiftPositionText + " (10^" + (shiftPosition) + ")";
+        }
         switch (addressA) {
             case 1:
                 if (addressB === 0) {
@@ -51,12 +58,12 @@ export class Disassembler {
                 }
             case 11:
                 return "TEST POSITIVE [" + addressB + "]"
-                    + " (" + this.processor.peek(addressB) + ")";
+                    + " (" + this.format(this.processor.peek(addressB)) + ")";
             case 12:
                 return "TEST NEGATIVE [" + addressB + "]"
-                    + " (" + this.processor.peek(addressB) + ")";
+                    + " (" + this.format(this.processor.peek(addressB)) + ")";
             case 21:
-                return "TRANSFER to " + addressB;
+                return "TRANSFER to " + ((addressB < 10) ? "tape " : "") + addressB;
             case 22:
                 return "CONDITIONAL TRANSFER to " + addressB + 
                     " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
@@ -64,8 +71,10 @@ export class Disassembler {
                 return "PRINT LAYOUT REFERENCE 1";
             case 74:
                 return "PRINT LAYOUT REFERENCE 2";
+            case 85:
+                return "SHIFT";
             default:
-                throw new Error("Unknown control instruction " + instruction);
+                throw new Error("Unknown control order " + HarwellInstruction.getOrderCode(instruction));
         }
     }
 
@@ -73,12 +82,12 @@ export class Disassembler {
         const addressA: number = HarwellInstruction.getAddressA(instruction);
         const addressB: number = HarwellInstruction.getAddressB(instruction);
         const addend: number = this.processor.peekAhead(addressA);
+        const addendText: string = this.format(addend);
         if (addressB === 1) {
-            return "PRINT [" + addressA + "] (" + addend + ")";
+            return "PRINT [" + addressA + "] (" + addendText + ")";
         }
         const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
-        const addendText: string = this.format(addend);
         const result: string = this.format(current + addend);
         return "[" + addressB + "] += [" + addressA + "]"
             + " (" + currentText + " + " + addendText + " = " + result + ")";
@@ -88,15 +97,15 @@ export class Disassembler {
         const addressA: number = HarwellInstruction.getAddressA(instruction);
         const addressB: number = HarwellInstruction.getAddressB(instruction);
         const addend: number = this.processor.peekAhead(addressA);
+        const addendText: string = this.format(addend);
         if (addressB === 0) {
-            return "CLEAR [" + addressA + "] (" + addend + ")";
+            return "CLEAR [" + addressA + "] (" + addendText + ")";
         }
         if (addressB === 1) {
-            return "PRINT [" + addressA + "] (" + addend + ")";
+            return "PRINT [" + addressA + "] (" + addendText + ")";
         }
         const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
-        const addendText: string = this.format(addend);
         const result: string = this.format(current + addend);
         return "[" + addressB + "] += [" + addressA + "]; CLEAR [" + addressA + "]"
             + " (" + currentText + " + " + addendText + " = " + result + ")";
@@ -106,15 +115,15 @@ export class Disassembler {
         const addressA: number = HarwellInstruction.getAddressA(instruction);
         const addressB: number = HarwellInstruction.getAddressB(instruction);
         const subtrahend: number = this.processor.peekAhead(addressA);
+        const subtrahendText: string = this.format(subtrahend);
         if (addressB === 0) {
-            return "CLEAR [" + addressA + "] (" + subtrahend + ")";
+            return "CLEAR [" + addressA + "] (" + subtrahendText + ")";
         }
         if (addressB === 1) {
-            return "PRINT [" + addressA + "] (" + subtrahend + ")";
+            return "PRINT [" + addressA + "] (" + subtrahendText + ")";
         }
         const current: number = this.processor.peek(addressB);
         const currentText: string = this.format(current);
-        const subtrahendText: string = this.format(subtrahend);
         const result: string = this.format(current - subtrahend);
         return "[" + addressB + "] -= "
             + "[" + addressA + "]; CLEAR [" + addressA + "] (" + currentText + " - " + subtrahendText + " = " + result + ")";
@@ -139,7 +148,7 @@ export class Disassembler {
         const multiplier: number = this.processor.peek(addressB);
         const multiplicandText: string = this.format(multiplier);
         const multiplierText: string = this.format(multiplier);
-        const result: string = this.format(multiplicand * multiplier);
+        const result: string = this.format((multiplicand * multiplier) / 10000000);
         return "[09] = " + "[" + addressA + "] * [" + addressB + "]"
             + " (" + multiplicandText + " * " + multiplierText + " = " + result + ")";
     }
@@ -151,7 +160,7 @@ export class Disassembler {
         const divisor: number = this.processor.peek(addressA);
         const dividendText: string = this.format(dividend);
         const divisorText: string = this.format(divisor);
-        const quotient: string = this.format(dividend / divisor);
+        const quotient: string = this.format((dividend / divisor) * 10000000);
         const remainder: string = this.format(dividend % divisor);
         return "[" + addressB + "] = " + "[09] / [" + addressA + "]"
             + " (" + dividendText + " / " + divisorText + " = " + quotient + "); "
@@ -159,7 +168,19 @@ export class Disassembler {
             + " (" + dividendText + " % " + divisorText + " = " + remainder + ")";
     }
 
-    private format(result: number): string {
-        return Number(result.toFixed(7)).toString();
+    private disassembleTransferPositiveModulus(instruction: number): string {
+        const addressA: number = HarwellInstruction.getAddressA(instruction);
+        const addressB: number = HarwellInstruction.getAddressB(instruction);
+        throw new Error("TRANSFER POSITIVE MODULUS not supported");
+    }
+
+    private format(value: number): string {
+        if (value >= 1 && value <= 9) {
+            return "0.000000" + value;
+        }
+        if (value >= -9 && value <= -1) {
+            return "-0.000000" + -value;
+        }
+        return (value / 10000000).toString();
     }
 }

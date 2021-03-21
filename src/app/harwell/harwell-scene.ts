@@ -25,6 +25,8 @@ export class HarwellScene extends Scene {
     isSingleStepping: boolean = true;
     isSingleStepDone: boolean = true;
     nextInstructionText: string;
+    isInErrorState: boolean = false;
+    errorText: string;
 
     programList: ProgramDescription[] = ExamplePrograms.programList;
 
@@ -85,8 +87,11 @@ export class HarwellScene extends Scene {
         this.processor.output = [""];
         this.isSingleStepping = true;
         this.isSingleStepDone = true;
+        this.isInErrorState = false;
+        this.errorText = undefined;
         this.processor.state.finished = false;
         this.processor.state.tapeNumber = 1;
+        this.processor.state.shiftPosition = 0;
         this.setIndicatorsPassive();
         this.disassembleNextInstruction();
     }
@@ -94,7 +99,15 @@ export class HarwellScene extends Scene {
     draw(seconds: number): void {
         super.draw(seconds);
 
-        this.runProcessorForFrame();
+        try {
+            if (!this.isInErrorState) {
+                this.runProcessorForFrame();
+            }
+        } catch (e) {
+            console.error(e);
+            this.errorText = e.message;
+            this.isInErrorState = true;
+        }
         this.copyStateToRenderObject();
 
         this.renderingContext.standardShader.use();

@@ -22,10 +22,10 @@ export class Assembler {
                     blockEntryIndices = new Map<number, number>();
                 }
             } else if (entry.length === 5) {
-                const instruction: number = Number(entry) / 10000;
+                const instruction: number = Number(entry) * 1000;
                 entries.push(instruction);
             } else if (entry.length === 9) {
-                const data: number = Number(entry) / 10000000;
+                const data: number = Number(entry);
                 entries.push(data);
             }
         });

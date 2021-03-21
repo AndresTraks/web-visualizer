@@ -1,17 +1,17 @@
 export class HarwellInstruction {
     static getOperation(entry: number): number {
-        return Math.floor(entry);
+        return Math.trunc(HarwellInstruction.getOrderCode(entry) / 10000);
     }
 
     static getAddressA(entry: number): number {
-        return Math.floor(HarwellInstruction.getOrderCode(entry) / 100) % 100;
+        return Math.trunc(HarwellInstruction.getOrderCode(entry) / 100) % 100;
     }
 
     static getAddressB(entry: number): number {
         return HarwellInstruction.getOrderCode(entry) % 100;
     }
 
-    private static getOrderCode(value: number): number {
-        return Math.round(value * 100000) / 10;
+    static getOrderCode(value: number): number {
+        return Math.trunc(value / 1000);
     }
 }

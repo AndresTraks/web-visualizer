@@ -1,4 +1,3 @@
-import { Vector3 } from '../graphics/vector3';
 import { Indicator } from './indicator';
 
 export class MemoryRegister {

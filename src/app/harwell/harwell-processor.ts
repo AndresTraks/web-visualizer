@@ -70,7 +70,7 @@ export class HarwellProcessor {
                 this.divide(addressA, addressB);
                 break;
             default:
-                throw new Error("Unknown instruction " + instruction);
+                throw new Error("Unknown order " + HarwellInstruction.getOrderCode(instruction));
         }
     }
 
@@ -85,6 +85,10 @@ export class HarwellProcessor {
                 const blockNumber: number = addressA % 10;
                 this.searchBlock(blockNumber, addressB);
             }
+            return;
+        }
+        if (addressA >= 81 && addressA <= 89) {
+            this.state.shiftPosition = -(addressA % 10) + 2;
             return;
         }
         switch (addressA) {
@@ -180,9 +184,9 @@ export class HarwellProcessor {
         this.state.printLayout = 2;
     }
 
-    print(entry: number): void {
-        const sign: string = entry < 0 ? '' : '+';
-        const valueString: string = sign + entry.toFixed(7);
+    print(value: number): void {
+        const sign: string = value < 0 ? '' : '+';
+        const valueString: string = sign + (value / 10000000).toFixed(7);
         if (this.state.printLayout === 1) {
             this.output[this.output.length - 1] += valueString + "   ";
         } else if (this.state.printLayout === 2) {
