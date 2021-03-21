@@ -46,6 +46,11 @@ export class Disassembler {
             return "CONDITIONAL SEARCH for block " + blockNumber + " on tape " + addressB
                 + " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
         }
+        if (addressA >= 70 && addressA <= 79) {
+            const layoutNumber: number = addressA % 10;
+            return "PRINT LAYOUT " + layoutNumber;
+            return;
+        }
         if (addressA >= 81 && addressA <= 89) {
             const shiftPosition: number = -(addressA % 10) + 2;
             const shiftPositionText: string = String.fromCharCode('A'.charCodeAt(0) - shiftPosition + 1);
@@ -67,10 +72,6 @@ export class Disassembler {
             case 22:
                 return "CONDITIONAL TRANSFER to " + addressB + 
                     " (" + (this.processor.state.yes ? "YES" : "NO") + ")";
-            case 73:
-                return "PRINT LAYOUT REFERENCE 1";
-            case 74:
-                return "PRINT LAYOUT REFERENCE 2";
             case 85:
                 return "SHIFT";
             default:

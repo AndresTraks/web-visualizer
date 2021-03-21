@@ -87,6 +87,11 @@ export class HarwellProcessor {
             }
             return;
         }
+        if (addressA >= 70 && addressA <= 79) {
+            const layoutNumber: number = addressA % 10;
+            this.state.printLayout = layoutNumber;
+            return;
+        }
         if (addressA >= 81 && addressA <= 89) {
             this.state.shiftPosition = -(addressA % 10) + 2;
             return;
@@ -109,12 +114,6 @@ export class HarwellProcessor {
                 if (this.state.yes) {
                     this.transferControl(addressB);
                 }
-                return;
-            case 73:
-                this.printLayoutReference1();
-                return;
-            case 74:
-                this.printLayoutReference2();
                 return;
         }
         throw new Error("Unknown control instruction 0" + addressA + addressB);
@@ -176,22 +175,20 @@ export class HarwellProcessor {
         this.state.finished = true;
     }
 
-    printLayoutReference1(): void {
-        this.state.printLayout = 1;
-    }
-
-    printLayoutReference2(): void {
-        this.state.printLayout = 2;
-    }
-
     print(value: number): void {
         const sign: string = value < 0 ? '' : '+';
         const valueString: string = sign + (value / 10000000).toFixed(7);
-        if (this.state.printLayout === 1) {
-            this.output[this.output.length - 1] += valueString + "   ";
-        } else if (this.state.printLayout === 2) {
-            this.output[this.output.length - 1] += valueString;
-            this.output.push("");
+        switch (this.state.printLayout) {
+            case 0:
+                this.output.push("", "", "", "", "");
+                break;
+            case 3:
+                this.output[this.output.length - 1] += valueString + "   ";
+                break;
+            case 4:
+                this.output[this.output.length - 1] += valueString;
+                this.output.push("");
+                break;
         }
     }
 
