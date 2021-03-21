@@ -35,7 +35,6 @@ export class ExamplePrograms {
 24000
 20900
 05202
-05202
 00100`),
             new ProgramDescription("2", "Example program 2", `
 [1]

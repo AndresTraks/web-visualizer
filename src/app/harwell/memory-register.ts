@@ -40,7 +40,7 @@ export class MemoryRegister {
     }
 
     private getDigit(index: number): number {
-        return Math.floor(Math.abs(this.currentValue) * (10**index)) % 10;
+        return Math.round(Math.abs(this.currentValue) / (10**(7-index))) % 10;
     }
 
     private setActive(isActive: boolean) {
