@@ -34,21 +34,21 @@ export class MemoryBank extends SceneNode {
 
     private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext): void {
         this.registers = [];
-        let registerPosition = this.position.add(new Vector3(-0.23, 0.22, 0));
+        let registerPosition = this.position.add(new Vector3(-0.23, -0.2175, 0));
         for (let r = 0; r < 5; r++) {
             const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
             const register: MemoryRegister = new MemoryRegister(indicators);
             this.setIndicatorPositions(register, registerPosition);
             this.registers[r] = register;
-            registerPosition = registerPosition.add(new Vector3(0, -TubeFactory.tubeDistance, 0));
+            registerPosition = registerPosition.add(new Vector3(0, TubeFactory.tubeDistance, 0));
         }
-        registerPosition = registerPosition.add(new Vector3(0, -0.055, 0));
+        registerPosition = registerPosition.add(new Vector3(0, 0.055, 0));
         for (let r = 5; r < 10; r++) {
             const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
             const register: MemoryRegister = new MemoryRegister(indicators);
             this.setIndicatorPositions(register, registerPosition);
             this.registers[r] = register;
-            registerPosition = registerPosition.add(new Vector3(0, -TubeFactory.tubeDistance, 0));
+            registerPosition = registerPosition.add(new Vector3(0, TubeFactory.tubeDistance, 0));
         }
     }
 

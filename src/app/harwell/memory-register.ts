@@ -36,7 +36,7 @@ export class MemoryRegister {
     }
 
     private getSignDigit(): number {
-        return this.currentValue >= 0 ? 0 : 1;
+        return this.currentValue >= 0 ? 0 : 9;
     }
 
     private getDigit(index: number): number {
