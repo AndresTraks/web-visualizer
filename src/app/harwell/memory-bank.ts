@@ -2,6 +2,7 @@ import { AppRenderingContext } from '../graphics/app-rendering-context';
 import { Matrix4 } from '../graphics/matrix4';
 import { Mesh } from '../graphics/mesh';
 import { ShapeFactory } from '../graphics/shape-factory';
+import { StatusLight } from './status-light';
 import { Vector3 } from '../graphics/vector3';
 import { SceneNode } from '../scene/scene-node';
 import { Indicator } from './indicator';
@@ -10,8 +11,11 @@ import { TubeFactory } from './tube-mesh-factory';
 
 export class MemoryBank extends SceneNode {
     registers: MemoryRegister[];
+    statusLights: StatusLight[];
+    storeStatusLight: StatusLight;
+    readStatusLight: StatusLight;
 
-    constructor(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3, renderingContext: AppRenderingContext) {
+    constructor(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, statusLightMesh: Mesh, position: Vector3, renderingContext: AppRenderingContext) {
         super(renderingContext);
         this.position = position;
 
@@ -27,9 +31,41 @@ export class MemoryBank extends SceneNode {
         tubeNode.color = [0.2, 0.2, 0.2, 1];
         tubeNode.worldTransform = Matrix4.rotationX(Math.PI / 2).multiply(Matrix4.translation(position));
 
-        this.children = [caseNode, backNode, tubeNode];
+        const statusLightPlateNode = SceneNode.withMesh(new Mesh(ShapeFactory.createBox(new Vector3(0.05, 0.035, 0.02)), this.gl), renderingContext);
+        statusLightPlateNode.color = [0.2, 0.2, 0.2, 1];
+        statusLightPlateNode.worldTransform = Matrix4.translation(position.add(new Vector3(0.01, 0, 0)));
+
+        this.children = [caseNode, backNode, tubeNode, statusLightPlateNode];
 
         this.createRegisters(indicatorMesh, renderingContext);
+        this.createStatusLights(statusLightMesh, renderingContext);
+    }
+
+    private createStatusLights(statusLightMesh: Mesh, renderingContext: AppRenderingContext) {
+        this.storeStatusLight = this.createStatusLight(this.position.add(new Vector3(-0.02, 0.015, 0.02)), statusLightMesh, renderingContext);
+        this.storeStatusLight.activeColor = StatusLight.activeStoreColor;
+        this.storeStatusLight.passiveColor = StatusLight.passiveStoreColor;
+
+        this.readStatusLight = this.createStatusLight(this.position.add(new Vector3(0.04, 0.015, 0.02)), statusLightMesh, renderingContext);
+        this.readStatusLight.activeColor = StatusLight.activeReadColor;
+        this.readStatusLight.passiveColor = StatusLight.passiveReadColor;
+        
+        this.statusLights = [
+            this.createStatusLight(this.position.add(new Vector3(0, 0.015, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0.02, 0.015, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(-0.02, 0, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0, 0, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0.02, 0, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0.04, 0, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(-0.02, -0.015, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0, -0.015, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0.02, -0.015, 0.02)), statusLightMesh, renderingContext),
+            this.createStatusLight(this.position.add(new Vector3(0.04, -0.015, 0.02)), statusLightMesh, renderingContext),
+        ];
+    }
+
+    private createStatusLight(position: Vector3, statusLightMesh: Mesh, renderingContext: AppRenderingContext): StatusLight {
+        return new StatusLight(statusLightMesh, position, renderingContext)
     }
 
     private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext): void {
@@ -85,6 +121,11 @@ export class MemoryBank extends SceneNode {
             for (const indicator of register.indicators) {
                 indicator.draw();
             }
+        });
+        this.storeStatusLight.draw();
+        this.readStatusLight.draw();
+        this.statusLights.forEach(statusLight => {
+            statusLight.draw();
         });
         this.renderingContext.standardShader.use();
     }

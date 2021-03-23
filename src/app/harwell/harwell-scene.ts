@@ -12,6 +12,7 @@ import { Disassembler } from './disassembler';
 import { ExamplePrograms } from './example-programs';
 import { ProgramDescription } from './program-description';
 import { Accumulator } from './accumulator';
+import { HarwellInstruction } from './harwell-instruction';
 
 export class HarwellScene extends Scene {
     processor: HarwellProcessor;
@@ -38,17 +39,18 @@ export class HarwellScene extends Scene {
         const memoryUnitMesh = new Mesh(ShapeFactory.createCase(new Vector3(0.25, 0.05, 0.25)), renderingContext.gl);
         const tubeMesh = new Mesh(TubeFactory.createMemoryUnit(), renderingContext.gl);
         const indicatorMesh = new Mesh(ShapeFactory.createBox(new Vector3(0.0025, 0.003, 0.0036)), renderingContext.gl);
+        const statusLightMesh = new Mesh(ShapeFactory.createBox(new Vector3(0.003, 0.003, 0.0036)), renderingContext.gl);
         const accumulatorMesh = new Mesh(TubeFactory.createAccumulator(), renderingContext.gl);
 
-        const memoryUnit1 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, -0.5, 0));
-        const memoryUnit2 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, 0, 0));
-        const memoryUnit3 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, 0.5, 0));
-        const memoryUnit4 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-0.5, 1, 0));
-        const memoryUnit5 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1, -0.5, 0));
-        const memoryUnit6 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1, 0, 0));
-        const memoryUnit7 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1, 0.5, 0));
-        const memoryUnit8 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1, 1, 0));
-        const memoryUnit9 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, new Vector3(-1.5, 1, 0));
+        const memoryUnit1 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-0.5, -0.5, 0));
+        const memoryUnit2 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-0.5, 0, 0));
+        const memoryUnit3 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-0.5, 0.5, 0));
+        const memoryUnit4 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-0.5, 1, 0));
+        const memoryUnit5 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-1, -0.5, 0));
+        const memoryUnit6 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-1, 0, 0));
+        const memoryUnit7 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-1, 0.5, 0));
+        const memoryUnit8 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-1, 1, 0));
+        const memoryUnit9 = this.createMemoryUnitNode(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, new Vector3(-1.5, 1, 0));
 
         this.accumulator8 = this.createAccumulatorNode(memoryUnitMesh, accumulatorMesh, indicatorMesh, new Vector3(0, -0.35, 0));
         this.accumulator9 = this.createAccumulatorNode(memoryUnitMesh, accumulatorMesh, indicatorMesh, new Vector3(0, 0.5, 0));
@@ -65,8 +67,8 @@ export class HarwellScene extends Scene {
         this.loadFirstProgram();
     }
 
-    private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): MemoryBank {
-        return new MemoryBank(memoryUnitMesh, tubeMesh, indicatorMesh, position, this.renderingContext);
+    private createMemoryUnitNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, statusLightMesh: Mesh, position: Vector3): MemoryBank {
+        return new MemoryBank(memoryUnitMesh, tubeMesh, indicatorMesh, statusLightMesh, position, this.renderingContext);
     }
 
     private createAccumulatorNode(memoryUnitMesh: Mesh, tubeMesh: Mesh, indicatorMesh: Mesh, position: Vector3): Accumulator {
@@ -142,14 +144,42 @@ export class HarwellScene extends Scene {
     }
 
     private copyStateToRenderObject(): void {
+        const instruction: number = this.processor.peekNextEntry();
+        const operation: Number = HarwellInstruction.getOperation(instruction);
+        const addressA: Number = HarwellInstruction.getAddressA(instruction);
+        const addressB: Number = HarwellInstruction.getAddressB(instruction);
+        const isArithmeticInstruction: boolean = operation !== 0;
+        const isSendingStoreWriteInstruction: boolean = operation === 2 || operation === 4;
+
         this.accumulator8.register.value = this.processor.peek(8);
         this.accumulator9.register.value = this.processor.peek(9);
         for (let b = 0; b < 9; b++) {
             const bank: MemoryBank = this.memoryBanks[b];
+            let bankReadStatus: boolean = false;
+            let bankStoreStatus: boolean = false;
             for (let r = 0; r < 10; r++) {
                 const register: MemoryRegister = bank.registers[r];
-                register.value = this.processor.peek((b + 1) * 10 + r);
+                const registerNumber: number = (b + 1) * 10 + r;
+                register.value = this.processor.peek(registerNumber);
+                let registerStatusLight: boolean = false;
+                if (isArithmeticInstruction) {
+                    if (registerNumber == addressA) {
+                        bankReadStatus = true;
+                        registerStatusLight = true;
+                        if (isSendingStoreWriteInstruction) {
+                            bankStoreStatus = true;
+                            registerStatusLight = true;
+                        }
+                    }
+                    if (registerNumber == addressB) {
+                        bankStoreStatus = true;
+                        registerStatusLight = true;
+                    }
+                }
+                bank.statusLights[r].status = registerStatusLight;
             }
+            bank.readStatusLight.status = bankReadStatus;
+            bank.storeStatusLight.status = bankStoreStatus;
         }
     }
 

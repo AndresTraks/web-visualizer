@@ -29,6 +29,14 @@ export class HarwellProcessor {
         return this.currentTape != null ? this.currentTape.blockNumber : null;
     }
 
+    peekNextEntry(): number {
+        if (this.state.tapeNumber > 7) {
+            const entry: number = this.state.get(this.state.tapeNumber);
+            return entry;
+        }
+        return this.currentTape.peek();
+    }
+
     readNextEntry(): number {
         if (this.state.tapeNumber > 7) {
             const entry: number = this.state.get(this.state.tapeNumber);
