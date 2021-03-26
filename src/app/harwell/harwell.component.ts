@@ -3,6 +3,8 @@ import { AppCanvasComponent } from "../graphics/app-canvas.component";
 import { HarwellScene } from './harwell-scene';
 import { Title } from '@angular/platform-browser';
 import { AppRenderingContext } from '../graphics/app-rendering-context';
+import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
+import { TapeEditorComponent } from "./tape-editor/tape-editor.component";
 
 @Component({
     selector: 'harwell-component',
@@ -15,7 +17,8 @@ export class HarwellComponent implements OnInit {
 
     isOrtographicProjection: boolean = false;
 
-    constructor(titleService: Title) {
+    constructor(private titleService: Title,
+        private modalService: NgbModal) {
         titleService.setTitle("Harwell Dekatron");
     }
 
@@ -31,5 +34,10 @@ export class HarwellComponent implements OnInit {
     onChangeOrtographicProjection(): void {
         this.isOrtographicProjection = !this.isOrtographicProjection;
         this.scene.camera.orthographic = this.isOrtographicProjection;
+    }
+
+    editTape(): void {
+        const modal: NgbModalRef = this.modalService.open(TapeEditorComponent);
+        modal.componentInstance.program = this.scene.findSelectedProgram();
     }
 }

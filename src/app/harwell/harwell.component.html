@@ -9,7 +9,20 @@
                 <select (change)="scene.onProgramChange($event.target.value)" class="mb-3">
                     <option *ngFor="let option of scene.programList"
                         [value]="option.id">{{option.title}}</option>
-                  </select>
+                </select>
+                <div class="btn-toolbar mb-3">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm mr-2"
+                        (click)="editTape()">Edit
+                    </button>
+                    <button 
+                        type="button"
+                        class="btn btn-primary btn-sm mr-2"
+                        (click)="scene.resetProgram()">Reload
+                    </button>
+                </div>
+                <hr/>
                 <div class="btn-toolbar mb-3">
                     <button
                         type="button"
@@ -22,11 +35,6 @@
                         (click)="scene.runProcessor()"
                         [disabled]="scene.processor.state.finished">
                         {{scene.isSingleStepping ? "Run" : "Stop"}}
-                    </button>
-                    <button 
-                        type="button"
-                        class="btn btn-primary mr-2"
-                        (click)="scene.resetProgram()">Reload
                     </button>
                     <br>
                 </div>

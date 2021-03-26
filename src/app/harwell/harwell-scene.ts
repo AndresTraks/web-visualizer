@@ -30,6 +30,7 @@ export class HarwellScene extends Scene {
     errorText: string;
 
     programList: ProgramDescription[] = ExamplePrograms.programList;
+    selectedProgram: string;
 
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
@@ -76,8 +77,7 @@ export class HarwellScene extends Scene {
     }
 
     onProgramChange(selected: string): void {
-        const program: ProgramDescription = this.programList.find(p => p.id === selected);
-        this.processor.setProgram(program.text);
+        this.selectedProgram = selected;
         this.resetProgram();
     }
 
@@ -86,6 +86,8 @@ export class HarwellScene extends Scene {
     }
 
     resetProgram(): void {
+        this.processor.setProgram(this.findSelectedProgram().text);
+
         this.processor.output = [""];
         this.isSingleStepping = true;
         this.isSingleStepDone = true;
@@ -96,6 +98,10 @@ export class HarwellScene extends Scene {
         this.processor.state.shiftPosition = 0;
         this.setIndicatorsPassive();
         this.disassembleNextInstruction();
+    }
+
+    findSelectedProgram(): ProgramDescription {
+        return this.programList.find(p => p.id === this.selectedProgram);
     }
 
     draw(seconds: number): void {

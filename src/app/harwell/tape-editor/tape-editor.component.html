@@ -1,0 +1,18 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Tape editor: {{program.title}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="dismiss()">
+    <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <textarea
+        style="width: 100%"
+        rows="20"
+        name="programText"
+        [(ngModel)]="programText">
+    </textarea>
+    <p *ngIf="errorText" class="text-danger">{{errorText}}</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="save()">Save</button>
+</div>
