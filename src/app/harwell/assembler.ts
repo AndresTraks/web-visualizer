@@ -22,7 +22,13 @@ export class Assembler {
                     throw Error("Expected block number, got \"" + entry + "\" on line " + lineNumber + ".");
                 }
                 blockEntryIndices.set(blockNumber, entries.length);
-            } else if (entry == '==tape') {
+            } else if (entry.startsWith('Block ')) {
+                const blockNumber: number = Number(entry.substr(6));
+                if (isNaN(blockNumber)) {
+                    throw Error("Expected block number, got \"" + entry + "\" on line " + lineNumber + ".");
+                }
+                blockEntryIndices.set(blockNumber, entries.length);
+            } else if (entry == '==tape' || entry.startsWith('PTR')) {
                 if (entries.length !== 0) {
                     tapes[tapeNumber] = new Tape(entries, blockEntryIndices);
                     tapeNumber++;
@@ -36,7 +42,10 @@ export class Assembler {
                 }
                 entries.push(instruction);
             } else if (entry.length === 9) {
-                const data: number = Number(entry);
+                let data: number = Number(entry);
+                if (entry.includes('.')) {
+                    data = data * 10000000;
+                }
                 if (isNaN(data)) {
                     throw Error("Expected number, got \"" + entry + "\" on line " + lineNumber + ".");
                 }

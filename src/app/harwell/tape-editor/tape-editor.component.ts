@@ -28,7 +28,6 @@ export class TapeEditorComponent implements OnInit {
             Assembler.assemble(this.programText);
         } catch (e) {
             this.errorText = e.message;
-            console.log(e.message);
             return;
         }
         

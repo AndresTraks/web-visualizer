@@ -16,7 +16,7 @@ export class Tape {
             this.index = this.blockEntryIndices.get(blockNumber);
             this.blockNumber = blockNumber;
         } else {
-            throw new Error("Block not found on tape after full loop");
+            throw new Error("Block " + blockNumber + " not found on tape after full loop");
         }
     }
 
