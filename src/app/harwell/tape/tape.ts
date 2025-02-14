@@ -12,8 +12,9 @@ export class Tape {
     }
 
     searchBlock(blockNumber: number): void {
-        if (this.blockEntryIndices.has(blockNumber)) {
-            this.index = this.blockEntryIndices.get(blockNumber);
+        const index = this.blockEntryIndices.get(blockNumber);
+        if (index !== undefined) {
+            this.index = index;
             this.blockNumber = blockNumber;
         } else {
             throw new Error("Block " + blockNumber + " not found on tape after full loop");

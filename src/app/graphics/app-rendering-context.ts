@@ -50,7 +50,6 @@ export class AppRenderingContext {
         return `
         precision mediump float;
 
-        uniform vec3 eye_position;
         uniform vec3 light_position;
         uniform vec4 vert_color;
 
@@ -59,7 +58,6 @@ export class AppRenderingContext {
         void main()
         {
             vec3 light_direction = normalize(light_position - world_position);
-            vec3 view_direction = normalize(eye_position - world_position);
             
             vec3 diffuse = (vert_color.xyz * 0.25) + clamp(dot(frag_normal, light_direction), 0.0, 1.0) * (vert_color.xyz * 0.75);
 
@@ -71,7 +69,6 @@ export class AppRenderingContext {
         return `
         precision mediump float;
 
-        uniform vec3 eye_position;
         uniform vec3 light_position;
         uniform vec4 vert_color;
 
@@ -80,7 +77,6 @@ export class AppRenderingContext {
         void main()
         {
             vec3 light_direction = normalize(light_position - world_position);
-            vec3 view_direction = normalize(eye_position - world_position);
             
             vec3 diffuse = (vert_color.xyz * 0.75) + clamp(dot(frag_normal, light_direction), 0.0, 1.0) * (vert_color.xyz * 0.25);
 

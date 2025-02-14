@@ -7,11 +7,20 @@ import { ShaderProgram } from '../graphics/shader-program';
 export class SceneNode {
     gl: WebGLRenderingContext;
     program: ShaderProgram;
-    meshes: Mesh[];
-    position: Vector3;
+    meshes?: Mesh[];
     worldTransform: Matrix4 = Matrix4.identity;
-    color: number[];
-    children: SceneNode[];
+    color?: number[];
+    children?: SceneNode[];
+
+    get position(): Vector3 {
+        return new Vector3(this.worldTransform.e41, this.worldTransform.e42, this.worldTransform.e43);
+    }
+
+    set position(value: Vector3) {
+        this.worldTransform.e41 = value.x;
+        this.worldTransform.e42 = value.y;
+        this.worldTransform.e43 = value.z;
+    }
 
     static withMesh(mesh: Mesh, renderingContext: AppRenderingContext): SceneNode {
         const node = new SceneNode(renderingContext);

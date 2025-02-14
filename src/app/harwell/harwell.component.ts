@@ -40,4 +40,9 @@ export class HarwellComponent implements OnInit {
         const modal: NgbModalRef = this.modalService.open(TapeEditorComponent);
         modal.componentInstance.program = this.scene.findSelectedProgram();
     }
+
+    onProgramChange(target: EventTarget | null): void {
+        const element: HTMLSelectElement = target as HTMLSelectElement;
+        this.scene.onProgramChange(element.value);
+    }
 }

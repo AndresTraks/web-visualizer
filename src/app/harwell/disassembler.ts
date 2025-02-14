@@ -49,18 +49,16 @@ export class Disassembler {
         if (addressA >= 70 && addressA <= 79) {
             const layoutNumber: number = addressA % 10;
             return "PRINT LAYOUT " + layoutNumber;
-            return;
         }
         if (addressA >= 81 && addressA <= 89) {
             const shiftPosition: number = -(addressA % 10) + 2;
             const shiftPositionText: string = String.fromCharCode('A'.charCodeAt(0) - shiftPosition + 1);
             return "SELECT SHIFT POSITION " + shiftPositionText + " (10^" + (shiftPosition) + ")";
         }
+        if (addressA === 1 && addressB === 0) {
+            return "FINISH";
+        }
         switch (addressA) {
-            case 1:
-                if (addressB === 0) {
-                    return "FINISH";
-                }
             case 11:
                 return "TEST POSITIVE [" + addressB + "]"
                     + " (" + this.format(this.processor.peek(addressB)) + ")";

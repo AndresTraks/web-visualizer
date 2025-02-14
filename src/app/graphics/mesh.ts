@@ -5,16 +5,24 @@ import { Matrix4 } from "./matrix4";
 export class Mesh {
     numVertices: number;
     buffer: WebGLBuffer;
-    positionAttribLocation: GLint;
-    normalAttribLocation: GLint;
-    childWorldTransform: Matrix4;
+    positionAttribLocation?: GLint;
+    normalAttribLocation?: GLint;
+    childWorldTransform?: Matrix4;
 
     constructor(vertices: Vector3[], private gl: WebGLRenderingContext) {
-        this.buffer = gl.createBuffer();
+        this.buffer = this.createGLBuffer();
         this.bind();
         this.gl.bufferData(this.gl.ARRAY_BUFFER, this.createBuffer(vertices), this.gl.STATIC_DRAW);
 
         this.numVertices = vertices.length / 2;
+    }
+
+    private createGLBuffer(): WebGLBuffer {
+        const buffer = this.gl.createBuffer();
+        if (!buffer) {
+            throw Error('ERROR creating GL buffer.');
+        }
+        return buffer;
     }
 
     private createBuffer(vertices: Vector3[]): Float32Array {

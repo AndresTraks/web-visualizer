@@ -13,7 +13,7 @@ class GearTrain extends SceneNode {
     readonly plateThickness: number = 0.03;
     readonly axleOffset: number = -0.005;
     
-    constructor(protected renderingContext: AppRenderingContext) {
+    constructor(renderingContext: AppRenderingContext) {
         super(renderingContext);
     }
 }
@@ -40,12 +40,10 @@ class SolarTrain extends GearTrain {
 
 
         this.b1.setAngleByParent(this.a1);
-        this.b1.position = Vector3.zero;
-        const bRotation: Matrix4 = Matrix4.rotationY(this.b1.angle);
-        this.b1.worldTransform = bRotation.multiply(Matrix4.translation(this.b1.position));
+        this.b1.worldTransform = Matrix4.rotationY(this.b1.angle);
 
         this.b2.setAttributesToParent(this.b1, -(this.thickness + this.explodeOffset));
-        this.b2.worldTransform = bRotation.multiply(Matrix4.translation(this.b2.position));
+        this.b2.worldTransform = this.b1.worldTransform.multiply(Matrix4.translation(this.b2.position));
     }
 }
 
@@ -86,8 +84,8 @@ class M1Train extends GearTrain {
         this.m3.setAttributesToParent(this.m2, -2 * (this.thickness + this.explodeOffset));
         this.m3.worldTransform = mRotation.multiply(Matrix4.translation(this.m3.position));
 
-        this.axleM.position = this.m1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleM.worldTransform = mRotation.multiply(Matrix4.translation(this.axleM.position));
+        const axleMposition = this.m1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleM.worldTransform = mRotation.multiply(Matrix4.translation(axleMposition));
     }
 }
 
@@ -119,11 +117,11 @@ class LunisolarTrain extends GearTrain {
         this.n3.setAttributesToParent(this.n2, -(this.thickness + this.explodeOffset));
         this.n3.worldTransform = nRotation.multiply(Matrix4.translation(this.n3.position));
 
-        this.metonicDial.position = this.n3.position.add(new Vector3(0, -5 * (this.thickness + this.explodeOffset), 0));
-        this.metonicDial.worldTransform = nRotation.multiply(Matrix4.translation(this.metonicDial.position));
+        const metonicDialPosition: Vector3 = this.n3.position.add(new Vector3(0, -5 * (this.thickness + this.explodeOffset), 0));
+        this.metonicDial.worldTransform = nRotation.multiply(Matrix4.translation(metonicDialPosition));
 
-        this.axleN.position = this.n1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleN.worldTransform = nRotation.multiply(Matrix4.translation(this.axleN.position));
+        const axleNPosition: Vector3 = this.n1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleN.worldTransform = nRotation.multiply(Matrix4.translation(axleNPosition));
     }
 }
 
@@ -146,11 +144,11 @@ class OlympicTrain extends GearTrain {
         this.o1.setAdjacentPosition(this.lunisolarNode.n2, 1.5 * Math.PI);
         this.o1.worldTransform = oRotation.multiply(Matrix4.translation(this.o1.position));
         
-        this.dial.position = this.o1.position.add(new Vector3(0, -6 * (this.thickness + this.explodeOffset), 0));
-        this.dial.worldTransform = oRotation.multiply(Matrix4.translation(this.dial.position));
+        const dialPosition: Vector3 = this.o1.position.add(new Vector3(0, -6 * (this.thickness + this.explodeOffset), 0));
+        this.dial.worldTransform = oRotation.multiply(Matrix4.translation(dialPosition));
 
-        this.axle.position = this.o1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axle.worldTransform = oRotation.multiply(Matrix4.translation(this.axle.position));
+        const axlePosition: Vector3 = this.o1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axle.worldTransform = oRotation.multiply(Matrix4.translation(axlePosition));
     }
 }
 
@@ -184,11 +182,11 @@ class CallipicTrain extends GearTrain {
         const qRotation = Matrix4.rotationY(this.q1.angle);
         this.q1.worldTransform = qRotation.multiply(Matrix4.translation(this.q1.position));
 
-        this.dial.position = this.q1.position.add(new Vector3(0, -4 * (this.thickness + this.explodeOffset), 0));
-        this.dial.worldTransform = qRotation.multiply(Matrix4.translation(this.dial.position));
+        const dialPosition: Vector3 = this.q1.position.add(new Vector3(0, -4 * (this.thickness + this.explodeOffset), 0));
+        this.dial.worldTransform = qRotation.multiply(Matrix4.translation(dialPosition));
 
-        this.axleQ.position = this.q1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleQ.worldTransform = qRotation.multiply(Matrix4.translation(this.axleQ.position));
+        const axleQPosition: Vector3 = this.q1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleQ.worldTransform = qRotation.multiply(Matrix4.translation(axleQPosition));
     }
 }
 
@@ -239,11 +237,11 @@ class SarosTrain extends GearTrain {
         this.g2.setAttributesToParent(this.g1, -(this.thickness + this.explodeOffset));
         this.g2.worldTransform = gRotation.multiply(Matrix4.translation(this.g2.position));
         
-        this.sarosDial.position = this.g2.position.add(new Vector3(0, -2 * (this.thickness + this.explodeOffset), 0));
-        this.sarosDial.worldTransform = gRotation.multiply(Matrix4.translation(this.sarosDial.position));
+        const sarosDialPosition: Vector3 = this.g2.position.add(new Vector3(0, -2 * (this.thickness + this.explodeOffset), 0));
+        this.sarosDial.worldTransform = gRotation.multiply(Matrix4.translation(sarosDialPosition));
 
-        this.axleG.position = this.g1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleG.worldTransform = gRotation.multiply(Matrix4.translation(this.axleG.position));
+        const axleGPosition: Vector3 = this.g1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleG.worldTransform = gRotation.multiply(Matrix4.translation(axleGPosition));
     }
 }
 
@@ -277,11 +275,11 @@ class ExeligmosTrain extends GearTrain {
         const iRotation = Matrix4.rotationY(this.gearI1.angle);
         this.gearI1.worldTransform = iRotation.multiply(Matrix4.translation(this.gearI1.position));
 
-        this.exigemosDial.position = this.gearI1.position.add(new Vector3(0, -1 * (this.thickness + this.explodeOffset), 0));
-        this.exigemosDial.worldTransform = iRotation.multiply(Matrix4.translation(this.exigemosDial.position));
+        const exigemosDialPosition: Vector3 = this.gearI1.position.add(new Vector3(0, -1 * (this.thickness + this.explodeOffset), 0));
+        this.exigemosDial.worldTransform = iRotation.multiply(Matrix4.translation(exigemosDialPosition));
 
-        this.axleI.position = this.gearI1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleI.worldTransform = iRotation.multiply(Matrix4.translation(this.axleI.position));
+        const axleIPosition: Vector3 = this.gearI1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleI.worldTransform = iRotation.multiply(Matrix4.translation(axleIPosition));
     }
 }
 
@@ -324,8 +322,8 @@ class LunarTrain extends GearTrain {
         this.d2.setAttributesToParent(this.d1, 2 * (-this.thickness - this.explodeOffset) - this.plateThickness);
         this.d2.worldTransform = dRotation.multiply(Matrix4.translation(this.d2.position));
 
-        this.axleD.position = this.d1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleD.worldTransform = dRotation.multiply(Matrix4.translation(this.axleD.position));
+        const axleDPosition: Vector3 = this.d1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleD.worldTransform = dRotation.multiply(Matrix4.translation(axleDPosition));
 
 
         this.e2.setAttributesByParent(this.d2, 0.152 * Math.PI);
@@ -367,12 +365,12 @@ class HipparchusTrain extends GearTrain {
         const k2PivotRadius = 0.27;
         const k2EpicycleMaxOffset = 2 * Math.PI / 60; // TODO
         this.k2.angle = this.lunarTrain.k1.angle + k2EpicycleMaxOffset * Math.sin(this.lunarTrain.k1.angle);
-        this.k2.position = this.lunarTrain.e5.position.add(new Vector3(
+        const k2Position: Vector3 = this.lunarTrain.e5.position.add(new Vector3(
             k2PivotRadius * Math.sin(this.sarosTrain.e3.angle),
             -this.thickness - this.explodeOffset,
             k2PivotRadius * Math.cos(this.sarosTrain.e3.angle)));
         const k2Rotation = Matrix4.rotationY(this.k2.angle);
-        this.k2.worldTransform = k2Rotation.multiply(Matrix4.translation(this.k2.position));
+        this.k2.worldTransform = k2Rotation.multiply(Matrix4.translation(k2Position));
         
         this.e6.setAttributesByParent(this.k2, Math.PI + this.sarosTrain.e3.angle);
         const eRotation3 = Matrix4.rotationY(this.e6.angle);
@@ -381,20 +379,20 @@ class HipparchusTrain extends GearTrain {
         this.e1.setAttributesToParent(this.e6, 4 * (this.thickness + this.explodeOffset));
         this.e1.worldTransform = eRotation3.multiply(Matrix4.translation(this.e1.position));
 
-        this.axleE.position = this.e1.position.add(new Vector3(0, this.axleOffset, 0));
-        this.axleE.worldTransform = eRotation3.multiply(Matrix4.translation(this.axleE.position));
+        const axleEPosition: Vector3 = this.e1.position.add(new Vector3(0, this.axleOffset, 0));
+        this.axleE.worldTransform = eRotation3.multiply(Matrix4.translation(axleEPosition));
 
 
         this.b3.setAttributesByParent(this.e1, Math.PI);
         const bRotation2 = Matrix4.rotationY(this.b3.angle);
-        this.b3.position = this.solarTrain.b2.position.add(new Vector3(0, -2 * (this.thickness + this.explodeOffset) - this.plateThickness, 0));
-        this.b3.worldTransform = bRotation2.multiply(Matrix4.translation(this.b3.position));
+        const b3Position = this.solarTrain.b2.position.add(new Vector3(0, -2 * (this.thickness + this.explodeOffset) - this.plateThickness, 0));
+        this.b3.worldTransform = bRotation2.multiply(Matrix4.translation(b3Position));
 
-        this.moonDial.position = this.b3.position.add(new Vector3(0, 5 * (this.thickness + this.explodeOffset), 0));
-        this.moonDial.worldTransform = bRotation2.multiply(Matrix4.translation(this.moonDial.position));
+        const moonDialPosition: Vector3 = this.b3.position.add(new Vector3(0, 5 * (this.thickness + this.explodeOffset), 0));
+        this.moonDial.worldTransform = bRotation2.multiply(Matrix4.translation(moonDialPosition));
         
-        this.axleB.position = this.moonDial.position.add(new Vector3(0, this.axleOffset + 0.01, 0));
-        this.axleB.worldTransform = bRotation2.multiply(Matrix4.translation(this.axleB.position));
+        const axleBPosition: Vector3 = this.moonDial.position.add(new Vector3(0, this.axleOffset + 0.01, 0));
+        this.axleB.worldTransform = bRotation2.multiply(Matrix4.translation(axleBPosition));
     }
 }
 
@@ -447,7 +445,7 @@ export class AntikytheraScene extends Scene {
             this.sarosTrain, this.exeligmosTrain, this.lunarTrain, this.hipparchusTrain];
     }
 
-    draw(seconds: number): void {
+    override draw(seconds: number): void {
         this.light.rotatingPosition = seconds;
         this.camera.rotatingPosition = seconds;
 

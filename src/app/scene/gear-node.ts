@@ -8,7 +8,7 @@ import { Matrix4 } from "../graphics/matrix4";
 import { AppRenderingContext } from '../graphics/app-rendering-context';
 
 export class GearNode extends SceneNode {
-    angle: number;
+    angle: number = 0;
 
     static createFace(numTeeth: number, outerRadius: number, renderingContext: AppRenderingContext): GearNode {
         const innerRadius = GearNode.getRightAngleToothInnerRadius(outerRadius, numTeeth);
@@ -31,7 +31,7 @@ export class GearNode extends SceneNode {
     constructor(private numTeeth: number,
         private outerRadius: number,
         private innerRadius: number,
-        private axleRadius: number,
+        private axleRadius: number | null,
         mesh: Mesh,
         renderingContext: AppRenderingContext) {
         super(renderingContext);
@@ -48,10 +48,11 @@ export class GearNode extends SceneNode {
     addCross(): void {
         const thickness = 0.01;
         const width = 0.08;
-        const crossMesh1 = new Mesh(ShapeFactory.createBox(new Vector3(this.axleRadius, thickness, width)), this.gl);
+        const crossMesh1 = new Mesh(ShapeFactory.createBox(new Vector3(this.axleRadius!, thickness, width)), this.gl);
         crossMesh1.childWorldTransform = Matrix4.translation(new Vector3(0, -0.012, 0));
-        const crossMesh2 = new Mesh(ShapeFactory.createBox(new Vector3(width, thickness, this.axleRadius)), this.gl);
+        const crossMesh2 = new Mesh(ShapeFactory.createBox(new Vector3(width, thickness, this.axleRadius!)), this.gl);
         crossMesh2.childWorldTransform = Matrix4.translation(new Vector3(0, -0.011, 0));
+        this.meshes = this.meshes ?? [];
         this.meshes.push(crossMesh1, crossMesh2);
     }
 

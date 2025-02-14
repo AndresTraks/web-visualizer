@@ -6,7 +6,7 @@
                     <span class="badge badge-arrow float-left">&#x2B9E;</span>
                     <span class="float-left">Control</span>
                 </button>
-                <select (change)="scene.onProgramChange($event.target.value)" class="mb-3">
+                <select (change)="onProgramChange($event.target)" class="mb-3">
                     <option *ngFor="let option of scene.programList"
                         [value]="option.id">{{option.title}}</option>
                 </select>

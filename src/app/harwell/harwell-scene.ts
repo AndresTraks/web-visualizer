@@ -25,12 +25,12 @@ export class HarwellScene extends Scene {
 
     isSingleStepping: boolean = true;
     isSingleStepDone: boolean = true;
-    nextInstructionText: string;
+    nextInstructionText?: string;
     isInErrorState: boolean = false;
-    errorText: string;
+    errorText?: string;
 
     programList: ProgramDescription[] = ExamplePrograms.programList;
-    selectedProgram: string;
+    selectedProgram?: string;
 
     constructor(renderingContext: AppRenderingContext) {
         super(renderingContext)
@@ -101,17 +101,21 @@ export class HarwellScene extends Scene {
     }
 
     findSelectedProgram(): ProgramDescription {
-        return this.programList.find(p => p.id === this.selectedProgram);
+        const description = this.programList.find(p => p.id === this.selectedProgram)
+        if (!description) {
+            throw Error('Could not get selected program.');
+        }
+        return description;
     }
 
-    draw(seconds: number): void {
+    override draw(seconds: number): void {
         super.draw(seconds);
 
         try {
             if (!this.isInErrorState) {
                 this.runProcessorForFrame();
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
             this.errorText = e.message;
             this.isInErrorState = true;

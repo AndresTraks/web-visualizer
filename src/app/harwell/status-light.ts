@@ -17,13 +17,12 @@ export class StatusLight extends SceneNode {
     private activeColorValue: number[] = StatusLight.activeRegisterColor;
     private passiveColorValue: number[] = StatusLight.passiveRegisterColor;
 
-    constructor(mesh: Mesh, position: Vector3, protected renderingContext: AppRenderingContext) {
+    constructor(mesh: Mesh, position: Vector3, renderingContext: AppRenderingContext) {
         super(renderingContext);
         this.meshes = [mesh];
         this.color = this.passiveColor;
         this.program = renderingContext.emitterShader;
         this.position = position;
-        this.worldTransform = Matrix4.translation(this.position);
     }
 
     get status(): boolean {

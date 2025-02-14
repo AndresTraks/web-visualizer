@@ -43,9 +43,6 @@ export class Scene {
         const viewMatrixLocation: WebGLUniformLocation = program.getUniformLocation('view_matrix');
         this.gl.uniformMatrix4fv(viewMatrixLocation, false, this.camera.viewMatrix.el);
 
-        const eyePositionUniformLocation: WebGLUniformLocation = program.getUniformLocation('eye_position');
-        this.gl.uniform3fv(eyePositionUniformLocation, this.camera.eye.el);
-
         const lightPositionUniformLocation: WebGLUniformLocation = program.getUniformLocation('light_position');
         this.gl.uniform3fv(lightPositionUniformLocation, this.light.position.el);
     }

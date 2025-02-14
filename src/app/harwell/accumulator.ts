@@ -29,35 +29,29 @@ export class Accumulator extends SceneNode {
 
         this.children = [caseNode, backNode, tubeNode];
 
-        this.createRegister(indicatorMesh, renderingContext);
+        this.register = this.createRegister(indicatorMesh, renderingContext);
     }
 
-    private createRegister(indicatorMesh: Mesh, renderingContext: AppRenderingContext) {
+    private createRegister(indicatorMesh: Mesh, renderingContext: AppRenderingContext): MemoryRegister {
         const registerPosition = this.position.add(new Vector3(-0.15, -0.1, 0));
-        const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
-        this.register = new MemoryRegister(indicators);
-        this.setIndicatorPositions(registerPosition);
+        const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext, registerPosition);
+        return new MemoryRegister(indicators);
     }
 
-    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext) {
+    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext, origin: Vector3) {
         const indicators: Indicator[] = [];
+
+        const indicatorPosition: Vector3 = origin.copy();
         for (let i = 0; i < 8; i++) {
-            indicators[i] = new Indicator(indicatorMesh, renderingContext);
+            indicators[i] = new Indicator(indicatorMesh, renderingContext, indicatorPosition);
+            indicatorPosition.x += TubeFactory.tubeDistance;
         }
+
         return indicators;
     }
 
-    private setIndicatorPositions(origin: Vector3): void {
-        const position: Vector3 = origin.copy();
-        for (let i = 0; i < 8; i++) {
-            const indicator: Indicator = this.register.indicators[i];
-            indicator.position = position.copy();
-            position.x += TubeFactory.tubeDistance;
-        }
-    }
-
-    draw(): void {
-        this.children.forEach(child => {
+    override draw(): void {
+        this.children?.forEach(child => {
             child.draw();
         });
 

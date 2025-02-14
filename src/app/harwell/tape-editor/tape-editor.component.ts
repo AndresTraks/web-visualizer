@@ -13,7 +13,7 @@ export class TapeEditorComponent implements OnInit {
     program: ProgramDescription;
 
     programText: string;
-    errorText: string;
+    errorText?: string;
 
     constructor(private modalService: NgbModal) {
         
@@ -26,7 +26,7 @@ export class TapeEditorComponent implements OnInit {
     save(): void {
         try {
             Assembler.assemble(this.programText);
-        } catch (e) {
+        } catch (e: any) {
             this.errorText = e.message;
             return;
         }

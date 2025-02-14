@@ -2,8 +2,8 @@ import { Matrix4 } from "../graphics/matrix4";
 import { Vector3 } from "../graphics/vector3";
 
 export class Camera {
-    eye: Vector3;
-    target: Vector3;
+    eye: Vector3 = new Vector3(1, 0, 0);
+    target: Vector3 = Vector3.zero;
     up: Vector3 = new Vector3(0, 1, 0);
     orthoScaling: number = 1;
 

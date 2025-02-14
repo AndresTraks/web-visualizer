@@ -19,14 +19,11 @@ export class HarwellProcessor {
     }
 
     get currentTape(): Tape {
-        if (this.state.tapeNumber > 7) {
-            return null;
-        }
-        return this.tapes[this.state.tapeNumber];
+        return this.getTape(this.state.tapeNumber);
     }
 
     get currentBlockNumber(): number {
-        return this.currentTape != null ? this.currentTape.blockNumber : null;
+        return this.currentTape.blockNumber;
     }
 
     peekNextEntry(): number {
@@ -107,11 +104,11 @@ export class HarwellProcessor {
             this.state.shiftPosition = -(addressA % 10) + 2;
             return;
         }
+        if (addressA === 1 && addressB === 0) {
+            this.finish();
+            return;
+        }
         switch (addressA) {
-            case 1:
-                if (addressB === 0) {
-                    this.finish();
-                }
             case 11:
                 this.testPositive(addressB);
                 return;
@@ -184,7 +181,7 @@ export class HarwellProcessor {
     }
 
     searchBlock(blockNumber: number, tapeNumber: number): void {
-        this.tapes[tapeNumber].searchBlock(blockNumber);
+        this.getTape(tapeNumber).searchBlock(blockNumber);
     }
 
     transferControl(addressB: number): void {
@@ -214,7 +211,7 @@ export class HarwellProcessor {
 
     peek(address: number): number {
         if (address > 0 && address < 8) {
-            return this.tapes[address].peekData();
+            return this.getTape(address).peekAt(address);
         }
         return this.state.get(address);
     }
@@ -223,15 +220,24 @@ export class HarwellProcessor {
         // Used on disassembly when the next instruction has not yet been read,
         // but data following the instruction is an input operand.
         if (address > 0 && address < 8) {
-            return this.tapes[address].peekAhead();
+            return this.getTape(address).peekAhead();
         }
         return this.peek(address);
     }
 
     read(address: number): number {
         if (address > 0 && address < 8) {
-            return this.tapes[address].read();
+            return this.getTape(address).read();
         }
         return this.state.get(address);
+    }
+
+    
+    private getTape(tapeNumber: number): Tape {
+        const tape = this.tapes.get(tapeNumber);
+        if (!tape) {
+            throw Error('ERROR invalid tape ' + tapeNumber);
+        }
+        return tape;
     }
 }

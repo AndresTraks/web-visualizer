@@ -37,20 +37,28 @@ export class MemoryBank extends SceneNode {
 
         this.children = [caseNode, backNode, tubeNode, statusLightPlateNode];
 
-        this.createRegisters(indicatorMesh, renderingContext);
-        this.createStatusLights(statusLightMesh, renderingContext);
+        this.registers = this.createRegisters(indicatorMesh, renderingContext);
+        this.storeStatusLight = this.createStoreStatusLight(statusLightMesh, renderingContext);
+        this.readStatusLight = this.createReadStatusLight(statusLightMesh, renderingContext);
+        this.statusLights = this.createStatusLights(statusLightMesh, renderingContext);
     }
 
-    private createStatusLights(statusLightMesh: Mesh, renderingContext: AppRenderingContext) {
-        this.storeStatusLight = this.createStatusLight(this.position.add(new Vector3(-0.02, 0.015, 0.02)), statusLightMesh, renderingContext);
-        this.storeStatusLight.activeColor = StatusLight.activeStoreColor;
-        this.storeStatusLight.passiveColor = StatusLight.passiveStoreColor;
+    private createStoreStatusLight(statusLightMesh: Mesh, renderingContext: AppRenderingContext): StatusLight {
+        const storeStatusLight: StatusLight = this.createStatusLight(this.position.add(new Vector3(-0.02, 0.015, 0.02)), statusLightMesh, renderingContext);
+        storeStatusLight.activeColor = StatusLight.activeStoreColor;
+        storeStatusLight.passiveColor = StatusLight.passiveStoreColor;
+        return storeStatusLight;
+    }
 
-        this.readStatusLight = this.createStatusLight(this.position.add(new Vector3(0.04, 0.015, 0.02)), statusLightMesh, renderingContext);
-        this.readStatusLight.activeColor = StatusLight.activeReadColor;
-        this.readStatusLight.passiveColor = StatusLight.passiveReadColor;
-        
-        this.statusLights = [
+    private createReadStatusLight(statusLightMesh: Mesh, renderingContext: AppRenderingContext): StatusLight {
+        const readStatusLight: StatusLight = this.createStatusLight(this.position.add(new Vector3(0.04, 0.015, 0.02)), statusLightMesh, renderingContext);
+        readStatusLight.activeColor = StatusLight.activeReadColor;
+        readStatusLight.passiveColor = StatusLight.passiveReadColor;
+        return readStatusLight;
+    }
+
+    private createStatusLights(statusLightMesh: Mesh, renderingContext: AppRenderingContext): StatusLight[] {
+        return [
             this.createStatusLight(this.position.add(new Vector3(0, 0.015, 0.02)), statusLightMesh, renderingContext),
             this.createStatusLight(this.position.add(new Vector3(0.02, 0.015, 0.02)), statusLightMesh, renderingContext),
             this.createStatusLight(this.position.add(new Vector3(-0.02, 0, 0.02)), statusLightMesh, renderingContext),
@@ -68,51 +76,42 @@ export class MemoryBank extends SceneNode {
         return new StatusLight(statusLightMesh, position, renderingContext)
     }
 
-    private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext): void {
-        this.registers = [];
+    private createRegisters(indicatorMesh: Mesh, renderingContext: AppRenderingContext): MemoryRegister[] {
+        const registers: MemoryRegister[] = [];
         let registerPosition = this.position.add(new Vector3(-0.23, -0.2175, 0));
         for (let r = 0; r < 5; r++) {
-            const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
-            const register: MemoryRegister = new MemoryRegister(indicators);
-            this.setIndicatorPositions(register, registerPosition);
-            this.registers[r] = register;
+            const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext, registerPosition);
+            registers[r] = new MemoryRegister(indicators);
             registerPosition = registerPosition.add(new Vector3(0, TubeFactory.tubeDistance, 0));
         }
         registerPosition = registerPosition.add(new Vector3(0, 0.055, 0));
         for (let r = 5; r < 10; r++) {
-            const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext);
-            const register: MemoryRegister = new MemoryRegister(indicators);
-            this.setIndicatorPositions(register, registerPosition);
-            this.registers[r] = register;
+            const indicators: Indicator[] = this.createIndicators(indicatorMesh, renderingContext, registerPosition);
+            registers[r] = new MemoryRegister(indicators);
             registerPosition = registerPosition.add(new Vector3(0, TubeFactory.tubeDistance, 0));
         }
+        return registers;
     }
 
-    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext): Indicator[] {
+    private createIndicators(indicatorMesh: Mesh, renderingContext: AppRenderingContext, origin: Vector3): Indicator[] {
         const indicators: Indicator[] = [];
-        for (let i = 0; i < 9; i++) {
-            indicators[i] = new Indicator(indicatorMesh, renderingContext);
-        }
-        return indicators;
-    }
 
-    private setIndicatorPositions(register: MemoryRegister, origin: Vector3): void {
         const position: Vector3 = origin.copy();
         for (let i = 0; i < 5; i++) {
-            const indicator: Indicator = register.indicators[i];
-            indicator.position = position.copy();
+            indicators[i] = new Indicator(indicatorMesh, renderingContext, position);
             position.x += TubeFactory.tubeDistance;
         }
         position.x += TubeFactory.memoryRegisterMiddleGap;
         for (let i = 5; i < 9; i++) {
-            const indicator: Indicator = register.indicators[i];
-            indicator.position = position.copy();
+            indicators[i] = new Indicator(indicatorMesh, renderingContext, position);
             position.x += TubeFactory.tubeDistance;
         }
+
+        return indicators;
     }
 
-    draw(): void {
-        this.children.forEach(child => {
+    override draw(): void {
+        this.children?.forEach(child => {
             child.draw();
         });
 

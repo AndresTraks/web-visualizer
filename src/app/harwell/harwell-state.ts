@@ -8,45 +8,49 @@ export class HarwellState {
 
     constructor() {
         for (let address: number = 0; address <= 99; address++) {
-            this.data[address] = 0;
+            this.data.set(address, 0);
         }
         this.tapeNumber = 1;
         this.shiftPosition = 0;
     }
 
     get(address: number): number {
-        return this.data[address];
+        const value = this.data.get(address);
+        if (value === undefined) {
+            throw Error('ERROR invalid address ' + address);
+        }
+        return value;
     }
 
     add(address: number, value: number): void {
-        let sum: number = this.data[address] + value;
+        let sum: number = this.get(address) + value;
         if (this.shiftPosition !== 0) {
             sum *= 10**this.shiftPosition;
             this.shiftPosition = 0;
         }
 
         const mostSignificantDigits: number = Math.trunc(sum);
-        this.data[address] = mostSignificantDigits;
+        this.data.set(address, mostSignificantDigits);
 
         if (address == 9) {
             const leastSignificantDigits: number = Math.round(Math.abs(sum * 100000000) % 100000000);
-            this.data[8] = leastSignificantDigits;
+            this.data.set(8, leastSignificantDigits);
         }
     }
 
     subtract(address: number, value: number): void {
-        let difference: number = this.data[address] - value;
+        let difference: number = this.get(address) - value;
         if (this.shiftPosition !== 0) {
             difference *= 10**this.shiftPosition;
             this.shiftPosition = 0;
         }
 
         const mostSignificantDigits: number = Math.trunc(difference);
-        this.data[address] = mostSignificantDigits;
+        this.data.set(address, mostSignificantDigits);
 
         if (address == 9) {
             const leastSignificantDigits: number = Math.round(Math.abs(difference * 100000000) % 100000000);
-            this.data[8] = leastSignificantDigits;
+            this.data.set(8, leastSignificantDigits);
         }
     }
 
@@ -54,8 +58,8 @@ export class HarwellState {
         const product: number = this.get(addressA) * this.get(addressB);
         const leastSignificantDigits: number = Math.abs(product * 10) % 10000000;
         const mostSignificantDigits: number = Math.trunc(product / 10000000);
-        this.data[8] = leastSignificantDigits;
-        this.data[9] = mostSignificantDigits;
+        this.data.set(8, leastSignificantDigits);
+        this.data.set(9, mostSignificantDigits);
         this.clear(addressB);
     }
 
@@ -63,14 +67,14 @@ export class HarwellState {
         const divisior: number = this.get(addressA) / 10000000;
         const quotient: number = Math.trunc(this.get(9) / divisior);
         const remainder: number = Math.trunc(this.get(9) % divisior);
-        this.data[addressB] = quotient;
-        this.data[9] = remainder;
+        this.data.set(addressB, quotient);
+        this.data.set(9, remainder);
     }
 
     clear(address: number) {
-        this.data[address] = 0;
+        this.data.set(address, 0);
         if (address == 9) {
-            this.data[8] = 0;
+            this.data.set(8, 0);
         }
     }
 }

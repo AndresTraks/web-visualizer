@@ -30,7 +30,7 @@ export class Assembler {
                 blockEntryIndices.set(blockNumber, entries.length);
             } else if (entry == '==tape' || entry.startsWith('PTR')) {
                 if (entries.length !== 0) {
-                    tapes[tapeNumber] = new Tape(entries, blockEntryIndices);
+                    tapes.set(tapeNumber, new Tape(entries, blockEntryIndices));
                     tapeNumber++;
                     entries = [];
                     blockEntryIndices = new Map<number, number>();
@@ -54,7 +54,7 @@ export class Assembler {
                 throw Error("Unexpected entry \"" + entry + "\" on line " + lineNumber + ".");
             }
         });
-        tapes[tapeNumber] = new Tape(entries, blockEntryIndices);
+        tapes.set(tapeNumber, new Tape(entries, blockEntryIndices));
         return tapes;
     }
 }
