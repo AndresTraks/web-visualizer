@@ -1,68 +1,74 @@
 <div id="bodyContainer">
-    <div id="leftPanel">
-        <accordion [isAnimated]="true">
-            <accordion-group [isOpen]=true>
-                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
-                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
-                    <span class="float-left">Control</span>
-                </button>
-                <select (change)="onProgramChange($event.target)" class="mb-3">
-                    <option *ngFor="let option of scene.programList"
-                        [value]="option.id">{{option.title}}</option>
-                </select>
-                <div class="btn-toolbar mb-3">
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mr-2"
-                        (click)="editTape()">Edit
-                    </button>
-                    <button 
-                        type="button"
-                        class="btn btn-primary btn-sm mr-2"
-                        (click)="scene.resetProgram()">Reload
-                    </button>
-                </div>
-                <hr/>
-                <div class="btn-toolbar mb-3">
-                    <button
-                        type="button"
-                        class="btn btn-primary mr-2"
-                        (click)="scene.stepProcessor()"
-                        [disabled]="scene.processor.state.finished">Step</button>
-                    <button 
-                        type="button"
-                        class="btn btn-primary mr-4"
-                        (click)="scene.runProcessor()"
-                        [disabled]="scene.processor.state.finished">
-                        {{scene.isSingleStepping ? "Run" : "Stop"}}
-                    </button>
-                    <br>
-                </div>
-                <p class="mb-0">Tape {{scene.processor.state.tapeNumber}}, block {{scene.processor.currentBlockNumber}}</p>
-                <p style="min-height: 5em;">Order: {{scene.nextInstructionText}}</p>
-                <p *ngIf="scene.isInErrorState" class="text-danger">{{scene.errorText}}</p>
-            </accordion-group>
-            <accordion-group [isOpen]=true>
-                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
-                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
-                    <span class="float-left">Output</span>
-                </button>
-                <p class="mb-0" *ngFor="let line of scene.processor.output">{{line}}<br/></p>
-            </accordion-group>
-            <accordion-group>
-                <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
-                    <span class="badge badge-arrow float-left">&#x2B9E;</span>
-                    <span class="float-left">Settings</span>
-                </button>
-                <label>
-                    <input value="ds"
-                           type="checkbox"
-                           [checked]="isOrtographicProjection"
-                           (change)="onChangeOrtographicProjection()">
-                    Orthographic projection
-                </label>
-            </accordion-group>
+  <div id="leftPanel">
+    <accordion [isAnimated]="true">
+      <accordion-group [isOpen]=true>
+        <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+          <span class="badge badge-arrow float-left">&#x2B9E;</span>
+          <span class="float-left">Control</span>
+        </button>
+        <select (change)="onProgramChange($event.target)" class="mb-3">
+          @for (option of scene.programList; track option) {
+            <option
+            [value]="option.id">{{option.title}}</option>
+          }
+        </select>
+        <div class="btn-toolbar mb-3">
+          <button
+            type="button"
+            class="btn btn-primary btn-sm mr-2"
+            (click)="editTape()">Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm mr-2"
+            (click)="scene.resetProgram()">Reload
+          </button>
+        </div>
+        <hr/>
+        <div class="btn-toolbar mb-3">
+          <button
+            type="button"
+            class="btn btn-primary mr-2"
+            (click)="scene.stepProcessor()"
+          [disabled]="scene.processor.state.finished">Step</button>
+          <button
+            type="button"
+            class="btn btn-primary mr-4"
+            (click)="scene.runProcessor()"
+            [disabled]="scene.processor.state.finished">
+            {{scene.isSingleStepping ? "Run" : "Stop"}}
+          </button>
+          <br>
+          </div>
+          <p class="mb-0">Tape {{scene.processor.state.tapeNumber}}, block {{scene.processor.currentBlockNumber}}</p>
+          <p style="min-height: 5em;">Order: {{scene.nextInstructionText}}</p>
+          @if (scene.isInErrorState) {
+            <p class="text-danger">{{scene.errorText}}</p>
+          }
+        </accordion-group>
+        <accordion-group [isOpen]=true>
+          <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+            <span class="badge badge-arrow float-left">&#x2B9E;</span>
+            <span class="float-left">Output</span>
+          </button>
+          @for (line of scene.processor.output; track line) {
+            <p class="mb-0">{{line}}<br/></p>
+          }
+        </accordion-group>
+        <accordion-group>
+          <button class="btn btn-link btn-block clearfix" accordion-heading type="button">
+            <span class="badge badge-arrow float-left">&#x2B9E;</span>
+            <span class="float-left">Settings</span>
+          </button>
+          <label>
+            <input value="ds"
+              type="checkbox"
+              [checked]="isOrtographicProjection"
+              (change)="onChangeOrtographicProjection()">
+              Orthographic projection
+            </label>
+          </accordion-group>
         </accordion>
+      </div>
+      <app-canvas></app-canvas>
     </div>
-    <app-canvas></app-canvas>
-</div>
