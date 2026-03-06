@@ -7,7 +7,8 @@ import { AppRenderingContext } from '../graphics/app-rendering-context';
 @Component({
     selector: 'antikythera-component',
     templateUrl: './antikythera.component.html',
-    styleUrls: ['./antikythera.component.css']
+    styleUrls: ['./antikythera.component.css'],
+    standalone: false
 })
 export class AntikytheraComponent implements OnInit {
     scene: AntikytheraScene;

@@ -3,7 +3,8 @@ import { Scene } from '../scene/scene';
 
 @Component({
     selector: 'app-canvas',
-    templateUrl: './app-canvas.component.html'
+    templateUrl: './app-canvas.component.html',
+    standalone: false
 })
 export class AppCanvasComponent {
     @ViewChild('surface', { static: true }) surface: ElementRef;

@@ -9,7 +9,8 @@ import { TapeEditorComponent } from "./tape-editor/tape-editor.component";
 @Component({
     selector: 'harwell-component',
     templateUrl: './harwell.component.html',
-    styleUrls: ['./harwell.component.css']
+    styleUrls: ['./harwell.component.css'],
+    standalone: false
 })
 export class HarwellComponent implements OnInit {
     scene: HarwellScene;

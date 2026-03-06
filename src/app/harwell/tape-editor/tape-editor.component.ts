@@ -5,7 +5,8 @@ import { ProgramDescription } from "../program-description";
 
 @Component({
     selector: 'tape-editor-component',
-    templateUrl: './tape-editor.component.html'
+    templateUrl: './tape-editor.component.html',
+    standalone: false
 })
 export class TapeEditorComponent implements OnInit {
 
